@@ -1,15 +1,15 @@
 import 'dart:io';
 
+import 'package:olx_test_runner/test_runner/test_runner.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
-import 'package:test_runner/test_runner/test_runner.dart';
-import 'package:test_runner/utils/cli_logger.dart';
 
 import '../test_utils.dart';
 
 void main() {
   group('$TestRunner', () {
-    const testFiles = 'test_files/test_runner/';
+    const testFiles = 'test_files/olx_test_runner/';
     late TestRunner testRunner;
     setUpAll(() {
       CliLogger.setup(disableLogging: true);

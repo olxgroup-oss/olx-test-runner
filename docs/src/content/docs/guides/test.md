@@ -9,7 +9,7 @@ Test command generates test groups and runs these test groups.
 
 You can launch the `test` command using the following syntax:
 ```
-dart pub global run test_runner test <options>
+dart pub global run olx_test_runner test <options>
 ```
 
 #### Available Options
@@ -34,17 +34,17 @@ dart pub global run test_runner test <options>
 ## Example:
 
 ```shell
-dart pub global run test_runner test --test-path ./test_files --coverage 
+dart pub global run olx_test_runner test --test-path ./test_files --coverage 
 ```
 
 ```shell
 Building package executable... 
-Built test_runner:test_runner.
+Built olx_test_runner:olx_test_runner.
 Generating test groups for `./test_files`. Test group index: 0, total groups: 1 
 ✓ Generated test group file: ./test_files/generated_test_group_0.dart (3ms)
 ✓ Files generated. Running tests. (7ms)
 Running test group: 1/1
-✓ Test: loading /Users/jakub.homlala/StudioProjects/test_runner/test_files/generated_test_group_0.dart - success (0.5s)
+✓ Test: loading /Users/jakub.homlala/StudioProjects/olx_test_runner/test_files/generated_test_group_0.dart - success (0.5s)
 Running group: Collection Tests
 ✓ Test: Collection Tests Check if list contains specific elements - success (3ms)
 ✓ Test: Collection Tests List equality check - success (1ms)

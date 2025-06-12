@@ -4,7 +4,7 @@ class FakeCommandRunner extends CommandRunner<void> {
   // ignore: strict_raw_type
   FakeCommandRunner(Command command)
       : super(
-          'test_runner',
+          'olx_test_runner',
           'A CLI tool for running Flutter tests.',
         ) {
     addCommand(command);

@@ -1,9 +1,9 @@
 import 'package:mocktail/mocktail.dart';
+import 'package:olx_test_runner/command_runner/validate_test_command.dart';
+import 'package:olx_test_runner/test_validator/test_validator.dart';
+import 'package:olx_test_runner/test_validator/validation_summary.dart';
+import 'package:olx_test_runner/utils/exit.dart';
 import 'package:test/test.dart';
-import 'package:test_runner/command_runner/validate_test_command.dart';
-import 'package:test_runner/test_validator/test_validator.dart';
-import 'package:test_runner/test_validator/validation_summary.dart';
-import 'package:test_runner/utils/exit.dart';
 
 import 'fake_command_runner.dart';
 

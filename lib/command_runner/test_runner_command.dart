@@ -1,8 +1,8 @@
 import 'package:args/command_runner.dart';
-import 'package:test_runner/test_runner/test_runner.dart';
-import 'package:test_runner/utils/cli_logger.dart';
-import 'package:test_runner/utils/exit.dart';
-import 'package:test_runner/utils/input_utils.dart';
+import 'package:olx_test_runner/test_runner/test_runner.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/exit.dart';
+import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestRunnerCommand extends Command<void> {
   TestRunnerCommand({TestRunner? testRunner, ExitWrapper? exitWrapper})

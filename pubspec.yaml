@@ -1,10 +1,10 @@
-name: test_runner
+name: olx_test_runner
 description: "CLI tool to help running Flutter tests."
 version: 0.10.2
-homepage: https://github.com/olxgroup-oss/test-runner
-repository: https://github.com/olxgroup-oss/test-runner
-issue_tracker: https://github.com/olxgroup-oss/test-runner/issues
-documentation: https://olxgroup-oss.github.io/test-runner/
+homepage: https://github.com/olxgroup-oss/olx-test-runner
+repository: https://github.com/olxgroup-oss/olx-test-runner
+issue_tracker: https://github.com/olxgroup-oss/olx-test-runner/issues
+documentation: https://olxgroup-oss.github.io/olx-test-runner/
 topics: [test, unit-test, cli]
 screenshots:
   - description: The Test Runner package logo.

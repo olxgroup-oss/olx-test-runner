@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 
-import 'package:test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class ExitWrapper {
   factory ExitWrapper() {

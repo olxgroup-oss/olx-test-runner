@@ -1,9 +1,9 @@
 <p align="center">
-<img src="https://github.com/olxgroup-oss/test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="Test Runner Logo" />
+<img src="https://github.com/olxgroup-oss/olx-test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="Test Runner Logo" />
 </p>
 
 <p align="center">
-<a href="https://github.com/olxgroup-oss/test-runner/actions/"><img src="https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml/badge.svg" alt="Quality gate"></a>
+<a href="https://github.com/olxgroup-oss/olx-test-runner/actions/"><img src="https://github.com/olxgroup-oss/olx-test-runner/actions/workflows/quality-gate.yml/badge.svg" alt="Quality gate"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 </p>
 
@@ -32,15 +32,15 @@ unit tests run swiftly.
 
 ### Documentation:
 
-Documentation can be found [here](https://olxgroup-oss.github.io/test-runner/)
+Documentation can be found [here](https://olxgroup-oss.github.io/olx-test-runner/)
 
 ## How to use:
 
-To activate locally, go to the path with `test_runner` directory and then run this
+To activate locally, go to the path with `olx_test_runner` directory and then run this
 command:
 
 ```shell
-dart pub global activate test_runner --source path
+dart pub global activate olx_test_runner --source path
 ```
 
 This will hook package from local directory into dart runtime.
@@ -48,7 +48,7 @@ This will hook package from local directory into dart runtime.
 To activate (not locally) latest released version, run this command:
 
 ```shell
-dart pub global activate test_runner
+dart pub global activate olx_test_runner
 ```
 
 ## Commands:
@@ -64,14 +64,14 @@ structure and execute your tests efficiently.
 The command can be executed with the following syntax:
 
 ```
-dart pub global run test_runner generate <options>
+dart pub global run olx_test_runner generate <options>
 ```
 
 This command allows you to customize the test grouping process using various options to best fit the
 needs of your test environment.
 Running this command will generate test groups file inside your `test-path` directory.
 More about this command can be found in
-the [documentation](https://olxgroup-oss.github.io/test-runner/guides/generate/).
+the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/generate/).
 
 ### Test Command :test_tube:
 
@@ -84,7 +84,7 @@ process, ensuring a smooth and efficient workflow.
 You can launch the test command using the following syntax:
 
 ```
-dart pub global run test_runner test <options>
+dart pub global run olx_test_runner test <options>
 ```
 
 The test command handles three key tasks:
@@ -96,7 +96,7 @@ The test command handles three key tasks:
 3. Result reporting: Displays the results of the tests and optionally saves them in specified file
    paths.
    More about this command can be found in
-   the [documentation](https://olxgroup-oss.github.io/test-runner/guides/test/).
+   the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/test/).
 
 ### Validate Command :white_check_mark:
 
@@ -110,39 +110,39 @@ organization of your tests.
 You can run the validate command using the following syntax:
 
 ```
-dart pub global run test_runner validate <options>
+dart pub global run olx_test_runner validate <options>
 ```
 
 After execution, the command will analyze test files and provide verbose output indicating any
 issues or confirming that the test files are valid.
 More about this command can be found in
-the [documentation](https://olxgroup-oss.github.io/test-runner/guides/validate/).
+the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/validate/).
 
 ## Example usage
 
 Generate test groups:
 
 ```bash
-dart pub global activate test_runner
-dart pub global run test_runner generate --test-path ./test --seed 54382123 --shard-count 3
+dart pub global activate olx_test_runner
+dart pub global run olx_test_runner generate --test-path ./test --seed 54382123 --shard-count 3
 ```
 
 Run tests:
 
 ```bash
-dart pub global activate test_runner
-dart pub global run test_runner test --test-path ./test --seed 54382123 --shard-count 3 --result-path . --coverage
+dart pub global activate olx_test_runner
+dart pub global run olx_test_runner test --test-path ./test --seed 54382123 --shard-count 3 --result-path . --coverage
 ```
 
 Validate test groups:
 
 ```bash
-dart pub global activate test_runner
-dart pub global run test_runner validate --test-path ./test 
+dart pub global activate olx_test_runner
+dart pub global run olx_test_runner validate --test-path ./test 
 
 ```
 
 ## Support
 
 Feel free to report any issue or feature
-request [here](https://github.com/olxgroup-oss/test-runner/issues).
+request [here](https://github.com/olxgroup-oss/olx-test-runner/issues).

@@ -1,5 +1,5 @@
 import 'package:mason_logger/mason_logger.dart';
-import 'package:test_runner/test_runner/test_event.dart';
+import 'package:olx_test_runner/test_runner/test_event.dart';
 
 class TestProgress {
   TestProgress({

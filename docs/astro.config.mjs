@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 export default defineConfig({
   site: 'https://olxgroup-oss.github.io',
-  base: 'test-runner',
+  base: 'olx-test-runner',
 //   outDir: 'public',
 //   publicDir: 'static',
 	integrations: [

@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:mason_logger/mason_logger.dart';
-import 'package:test_runner/utils/cli_logger.dart';
-import 'package:test_runner/utils/input_utils.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestGroupGenerator {
   String? generateTestGroup({

@@ -5,10 +5,10 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:mason_logger/mason_logger.dart';
-import 'package:test_runner/test_validator/validation_result.dart';
-import 'package:test_runner/test_validator/validation_summary.dart';
-import 'package:test_runner/utils/cli_logger.dart';
-import 'package:test_runner/utils/input_utils.dart';
+import 'package:olx_test_runner/test_validator/validation_result.dart';
+import 'package:olx_test_runner/test_validator/validation_summary.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestValidator {
   Future<ValidationSummary> validate(String testPath) async {

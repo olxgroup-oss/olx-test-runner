@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:mocktail/mocktail.dart';
+import 'package:olx_test_runner/test_group_generator/test_group_generator.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:test/test.dart';
-import 'package:test_runner/test_group_generator/test_group_generator.dart';
-import 'package:test_runner/utils/cli_logger.dart';
 
 class MockDirectory extends Mock implements Directory {}
 
@@ -12,7 +12,7 @@ class MockFile extends Mock implements File {}
 class MockCliLogger extends Mock implements CliLogger {}
 
 void main() {
-  const testFiles = 'test_files/test_runner';
+  const testFiles = 'test_files/olx_test_runner';
   const firstSeed = 421499543;
   const anotherSeed = 4214995443;
   const shardCount = 3;

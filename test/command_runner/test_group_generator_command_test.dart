@@ -1,9 +1,9 @@
 import 'package:mocktail/mocktail.dart';
+import 'package:olx_test_runner/command_runner/test_group_generator_command.dart';
+import 'package:olx_test_runner/test_group_generator/test_group_generator.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/exit.dart';
 import 'package:test/scaffolding.dart';
-import 'package:test_runner/command_runner/test_group_generator_command.dart';
-import 'package:test_runner/test_group_generator/test_group_generator.dart';
-import 'package:test_runner/utils/cli_logger.dart';
-import 'package:test_runner/utils/exit.dart';
 
 import 'fake_command_runner.dart';
 
@@ -12,7 +12,7 @@ class TestGroupGeneratorMock extends Mock implements TestGroupGenerator {}
 class ExitWrapperMock extends Mock implements ExitWrapper {}
 
 void main() {
-  const testFiles = 'test_files/test_runner';
+  const testFiles = 'test_files/olx_test_runner';
   const seed = 421499543;
   const shardCount = 3;
   const shardIndex = 0;

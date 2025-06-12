@@ -1,4 +1,4 @@
-import 'package:test_runner/test_validator/validation_result.dart';
+import 'package:olx_test_runner/test_validator/validation_result.dart';
 
 class ValidationSummary {
   ValidationSummary({

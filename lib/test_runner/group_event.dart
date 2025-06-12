@@ -1,5 +1,5 @@
-import 'package:test_runner/test_runner/event.dart';
-import 'package:test_runner/test_runner/event_type.dart';
+import 'package:olx_test_runner/test_runner/event.dart';
+import 'package:olx_test_runner/test_runner/event_type.dart';
 
 class GroupEvent extends Event {
   GroupEvent({required this.group}) : super(type: EventType.group);

@@ -1,10 +1,10 @@
 import 'package:mocktail/mocktail.dart';
+import 'package:olx_test_runner/command_runner/test_runner_command.dart';
+import 'package:olx_test_runner/test_runner/test_result.dart';
+import 'package:olx_test_runner/test_runner/test_runner.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/exit.dart';
 import 'package:test/test.dart';
-import 'package:test_runner/command_runner/test_runner_command.dart';
-import 'package:test_runner/test_runner/test_result.dart';
-import 'package:test_runner/test_runner/test_runner.dart';
-import 'package:test_runner/utils/cli_logger.dart';
-import 'package:test_runner/utils/exit.dart';
 
 import 'fake_command_runner.dart';
 
@@ -13,7 +13,7 @@ class TestRunnerMock extends Mock implements TestRunner {}
 class ExitWrapperMock extends Mock implements ExitWrapper {}
 
 void main() {
-  const testPath = 'test_files/test_runner';
+  const testPath = 'test_files/olx_test_runner';
   const seed = 421499543;
   const shardCount = 3;
   const shardIndex = 0;

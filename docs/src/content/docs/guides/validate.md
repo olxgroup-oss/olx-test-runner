@@ -15,7 +15,7 @@ Not following these will result in flaky tests.
 
 You can run the validate command using the following syntax:
 ```
-dart pub global run test_runner validate <options>
+dart pub global run olx_test_runner validate <options>
 ```
 
 #### Available Options
@@ -25,18 +25,18 @@ dart pub global run test_runner validate <options>
 
 ## Example
 ```shell
-dart pub global run test_runner validate --test-path ./test_files 
+dart pub global run olx_test_runner validate --test-path ./test_files 
 ```
 
 
 ```shell
 Building package executable... 
-Built test_runner:test_runner.
+Built olx_test_runner:olx_test_runner.
 Validating tests at ./test_files
 ✓ Completed validation (78ms)
-./test_files/test_runner/second_test.dart is valid.
-./test_files/test_runner/first_test.dart is valid.
-./test_files/test_runner/third_test.dart is valid.
+./test_files/olx_test_runner/second_test.dart is valid.
+./test_files/olx_test_runner/first_test.dart is valid.
+./test_files/olx_test_runner/third_test.dart is valid.
 ./test_files/validator/valid/valid_test.dart is valid.
 ./test_files/validator/invalid/group_less_test.dart is invalid, detected 2 warning(s).
 - test found outside of a group at line 5

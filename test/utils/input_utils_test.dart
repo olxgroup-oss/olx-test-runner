@@ -1,6 +1,7 @@
 import 'dart:io';
+
+import 'package:olx_test_runner/utils/input_utils.dart';
 import 'package:test/test.dart';
-import 'package:test_runner/utils/input_utils.dart';
 
 void main() {
   group('$InputUtils', () {

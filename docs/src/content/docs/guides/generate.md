@@ -9,7 +9,7 @@ Generate command creates optimized test group based on the test files. It will c
 
 The command can be executed with the following syntax:
 ```
-dart pub global run test_runner generate <options>
+dart pub global run olx_test_runner generate <options>
 ```
 
 #### Available Options
@@ -25,7 +25,7 @@ dart pub global run test_runner generate <options>
 ## Example:
 
 ```shell
-dart pub global run test_runner generate --shard-index 1 --shard-count 1 --seed 12345 --test-path test_files/test_runner
+dart pub global run olx_test_runner generate --shard-index 1 --shard-count 1 --seed 12345 --test-path test_files/olx_test_runner
 ```
 
 
