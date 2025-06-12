@@ -20,7 +20,7 @@ dart pub global run olx_test_runner generate <options>
 - `--seed` (Optional):
   A numeric value used to randomize the test groups. By providing a seed, you can ensure reproducibility of the grouping process for consistent test execution.
 - `--test-path` (Required):
-  The path pointing to the location of your test files. This option ensures that Test Runner knows where to find and process your test suite.
+  The path pointing to the location of your test files. This option ensures that OLX Test Runner knows where to find and process your test suite.
 
 ## Example:
 

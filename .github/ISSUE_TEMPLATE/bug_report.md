@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment(please complete the following information):**
- - Test Runner version [e.g. 0.10.2]
+ - OLX Test Runner version [e.g. 0.10.2]
  - Flutter version [e.g 3.32]
 
 **Additional context**

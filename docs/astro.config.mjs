@@ -9,7 +9,7 @@ export default defineConfig({
 //   publicDir: 'static',
 	integrations: [
 		starlight({
-			title: 'Test Runner',
+			title: 'OLX Test Runner',
 			sidebar: [
 				{
 					label: 'Guides',

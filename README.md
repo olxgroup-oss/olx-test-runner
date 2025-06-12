@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/olxgroup-oss/olx-test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="Test Runner Logo" />
+<img src="https://github.com/olxgroup-oss/olx-test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="OLX Test Runner Logo" />
 </p>
 
 <p align="center">

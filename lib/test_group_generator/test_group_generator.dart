@@ -114,7 +114,7 @@ class TestGroupGenerator {
     required List<List<FileSystemEntity>> groups,
   }) {
     final buffer = StringBuffer()
-      ..writeln('// Test Runner generated file')
+      ..writeln('// OLX Test Runner generated file')
       ..writeln('// TEST GROUP ${shardIndex + 1}/$shardCount');
 
     for (final file in groups[shardIndex]) {
