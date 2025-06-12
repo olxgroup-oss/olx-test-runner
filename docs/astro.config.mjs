@@ -11,7 +11,6 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Test Runner',
-			// social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 				{
 					label: 'Guides',
