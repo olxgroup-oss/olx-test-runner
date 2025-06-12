@@ -2,12 +2,12 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
-// https://astro.build/config
+
 export default defineConfig({
-  ///TODO: Update page
-  site: 'https://github.com/olxgroup-oss/test-runner',
-  outDir: 'public',
-  publicDir: 'static',
+  site: 'https://olxgroup-oss.github.io',
+  base: 'test-runner',
+//   outDir: 'public',
+//   publicDir: 'static',
 	integrations: [
 		starlight({
 			title: 'Test Runner',
