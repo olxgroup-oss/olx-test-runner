@@ -42,7 +42,8 @@ class TestGroupGenerator {
 
       progress.update('Creating test groups...');
 
-      final groups = _createGroups(testFiles: testFiles, shardCount: shardCount);
+      final groups =
+          _createGroups(testFiles: testFiles, shardCount: shardCount);
 
       progress.update('Building test group file');
 
