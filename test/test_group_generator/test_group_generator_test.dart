@@ -35,7 +35,7 @@ void main() {
       required int shardCount,
     }) {
       expect(fileContent, isNotEmpty);
-      expect(fileContent, contains('// Test Runner generated file'));
+      expect(fileContent, contains('// OLX Test Runner generated file'));
       expect(
         fileContent,
         contains('// TEST GROUP ${shardIndex + 1}/$shardCount'),
