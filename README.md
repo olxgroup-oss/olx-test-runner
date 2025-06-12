@@ -7,14 +7,14 @@
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 </p>
 
-# Test runner
+# OLX Test runner
 
-The Test Runner library is an solution designed to speed up unit tests on slow machines. For
+The OLX Test Runner library is an solution designed to speed up unit tests on slow machines. For
 developers working on Flutter projects, running tests can often become a time-consuming task,
 especially when working with diverse environments that may not have optimal performance.
 This library addresses the issue by combining individual tests into test groups, boosting the
 efficiency and reducing the execution time of your test suite. By leveraging smarter grouping and
-execution, Test Runner ensures your testing workflow is streamlined and faster, allowing you to
+execution, OLX Test Runner ensures your testing workflow is streamlined and faster, allowing you to
 focus on development and iteration rather than waiting for slow tests to complete.
 
 ### Key Features:
@@ -55,7 +55,7 @@ dart pub global activate olx_test_runner
 
 ### Generate Command :dart:
 
-The Test Group Generation is a core feature of the Test Runner library that helps you generate
+The Test Group Generation is a core feature of the OLX Test Runner library that helps you generate
 optimized test groups for your Flutter project. This functionality is designed to make it easy to
 structure and execute your tests efficiently.
 
