@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-[![Flutter](https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml/badge.svg)](https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml)
+<a href="https://github.com/olxgroup-oss/test-runner/actions/"><img src="https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml/badge.svg" alt="Quality gate"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 </p>
 # Test runner
