@@ -2,6 +2,11 @@ name: test_runner
 description: "CLI tool to help running Flutter tests."
 version: 0.10.2
 homepage: https://github.com/olxgroup-oss/test-runner
+repository: https://github.com/olxgroup-oss/test-runner
+issue_tracker: https://github.com/olxgroup-oss/test-runner/issues
+documentation: https://olxgroup-oss.github.io/test-runner/
+topics: [test, unit-test, cli]
+
 
 environment:
   sdk: ">=3.5.4 <4.0.0"
