@@ -8,7 +8,7 @@ efficiency and reducing the execution time of your test suite. By leveraging sma
 execution, Test Runner ensures your testing workflow is streamlined and faster, allowing you to
 focus on development and iteration rather than waiting for slow tests to complete.
 
-#### Key Features:
+### Key Features:
 
 - Improved testing speed: combines tests into groups, minimizing overhead and speeding up execution
   even on low-performing machines.
@@ -21,7 +21,7 @@ This library solves an ongoing problem in the Flutter community, as outlined
 in [the issue](https://github.com/flutter/flutter/issues/69429). It is your go-to tool for ensuring
 unit tests run swiftly.
 
-#### Documentation:
+### Documentation:
 
 Documentation can be found [here](https://olxgroup-oss.github.io/test-runner/)
 
@@ -104,6 +104,11 @@ You can run the validate command using the following syntax:
 dart pub global run test_runner validate <options>
 ```
 
+After execution, the command will analyze test files and provide verbose output indicating any
+issues or confirming that the test files are valid.
+More about this command can be found in
+the [documentation](https://olxgroup-oss.github.io/test-runner/guides/validate/).
+
 ## Example usage
 
 Generate test groups:
@@ -124,14 +129,9 @@ Validate test groups:
 
 ```bash
 dart pub global activate test_runner
-dart pub global run test_runner validate --test-path ./test -
+dart pub global run test_runner validate --test-path ./test 
 
 ```
-
-After execution, the command will analyze test files and provide verbose output indicating any
-issues or confirming that the test files are valid.
-More about this command can be found in
-the [documentation](https://olxgroup-oss.github.io/test-runner/guides/validate/).
 
 ## Support
 
