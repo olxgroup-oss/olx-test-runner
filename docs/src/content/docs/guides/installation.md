@@ -11,7 +11,6 @@ To install OLX Test Runner, you need to run this in bash:
 dart pub global activate olx_test_runner
 ```
 
-Make sure you have valid [jFrog token](https://jfrog.com/blog/how-to-use-pub-repositories-in-artifactory/) token active before running this command. 
 
 ## Locally
 
