@@ -6,7 +6,9 @@ repository: https://github.com/olxgroup-oss/test-runner
 issue_tracker: https://github.com/olxgroup-oss/test-runner/issues
 documentation: https://olxgroup-oss.github.io/test-runner/
 topics: [test, unit-test, cli]
-
+screenshots:
+  - description: The Test Runner package logo.
+    path: assets/logos/logo_big.png
 
 environment:
   sdk: ">=3.5.4 <4.0.0"
