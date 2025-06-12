@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://github.com/olxgroup-oss/test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="Test Runner Logo" />
+</p>
+
 # Test runner
 
 The Test Runner library is an solution designed to speed up unit tests on slow machines. For
