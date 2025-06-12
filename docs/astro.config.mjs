@@ -14,11 +14,11 @@ export default defineConfig({
 				{
 					label: 'Guides',
 					items: [
-						{ label: 'Installation', slug: 'guides/installation' },
-						{ label: 'Generate command', slug: 'guides/generate' },
-						{ label: 'Test command', slug: 'guides/test' },
-						{ label: 'Validate command', slug: 'guides/validate' },
-						{ label: 'FAQ', slug: 'guides/faq' },
+						{ label: 'Installation', slug: 'test-runner/guides/installation' },
+						{ label: 'Generate command', slug: 'test-runner/guides/generate' },
+						{ label: 'Test command', slug: 'test-runner/guides/test' },
+						{ label: 'Validate command', slug: 'test-runner/guides/validate' },
+						{ label: 'FAQ', slug: '/test-runner/guides/faq' },
 					],
 				},
 			],
