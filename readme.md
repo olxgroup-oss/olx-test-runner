@@ -2,7 +2,12 @@
 <img src="https://github.com/olxgroup-oss/test-runner/blob/main/assets/logos/logo_big.png?raw=true" height="100" alt="Test Runner Logo" />
 </p>
 
+<p align="center">
+[![Flutter](https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml/badge.svg)](https://github.com/olxgroup-oss/test-runner/actions/workflows/quality-gate.yml)
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+</p>
 # Test runner
+
 
 The Test Runner library is an solution designed to speed up unit tests on slow machines. For
 developers working on Flutter projects, running tests can often become a time-consuming task,
