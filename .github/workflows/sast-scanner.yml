@@ -13,7 +13,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  TruffleHog:
+  trufflehog:
     runs-on: ubuntu-latest
     defaults:
       run:
