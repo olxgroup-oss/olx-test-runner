@@ -1,4 +1,4 @@
-name: SAST Scanner - TruffleHog
+name: SAST Scanner
 
 on:
   push:

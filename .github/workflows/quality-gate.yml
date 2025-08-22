@@ -1,4 +1,4 @@
-name: Flutter - Quality Gate
+name: Quality Gate
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  quality_gate:
+  flutter_quality_gate:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
