@@ -2,9 +2,9 @@ name: SAST Scanner
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -31,7 +31,6 @@ jobs:
         with:
           path: ./
           base: "${{ github.event.repository.default_branch }}"
-          head: HEAD
           extra_args: --results=verified,unknown
 
       - name: Scan Results Status
