@@ -36,10 +36,7 @@ jobs:
 
 
       - name: Results
-        if: steps.trufflehog.outcome == 'failure'
-        run: |
-          echo "TruffleHog found potential secrets in the codebase. Please review the findings below:"
-          echo "${{ steps.trufflehog.outputs.result }}"
+        run: ls -la
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
