@@ -168,6 +168,13 @@ class TestValidator {
       result.unit.visitChildren(visitor);
       visitor.validateGroupsEmptiness(); // Check for missing `group`
 
+      final singletonVisitor = SingletonUsageVisitor();
+      result.unit.visitChildren(singletonVisitor);
+      if (singletonVisitor.singletonUsages.isNotEmpty && singletonVisitor.singletonResets.isEmpty){
+        print("!!!!");
+        print("!!!!!!!Found singleton usages: ${singletonVisitor.singletonUsages}, in $filePath");
+      }
+
       if (warnings.isEmpty) {
         return ValidationResult.valid(path: filePath);
       } else {
@@ -235,6 +242,8 @@ class _TestVisitor extends RecursiveAstVisitor<void> {
           '${node.methodName.name} found outside of a group at line ${location.lineNumber}',
         );
       }
+
+
     }
 
     super.visitMethodInvocation(node);
@@ -250,5 +259,35 @@ class _TestVisitor extends RecursiveAstVisitor<void> {
     } else if (!_hasGroup) {
       warnings.add('No test group exists in the file.');
     }
+  }
+}
+
+
+/// A visitor that identifies usages of singletons in the code.
+class SingletonUsageVisitor extends RecursiveAstVisitor<void> {
+  final List<String> singletonUsages = [];
+  final List<String> singletonResets = [];
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    final methodName = node.methodName.name;
+
+    // Detect singleton usage (customize this as needed)
+    if (node.target != null && isSingleton(node.target.toString())) {
+      singletonUsages.add(methodName);
+    }
+
+    // Detect singleton resets like `Singleton.instance.reset()`
+    if (methodName == 'reset') {
+      singletonResets.add(methodName);
+    }
+
+    super.visitMethodInvocation(node);
+  }
+
+  /// Checks if the target is a singleton (customize logic here).
+  bool isSingleton(String target) {
+    // Define your singleton detection logic here
+    return target == 'Singleton' || target.endsWith('.instance');
   }
 }
