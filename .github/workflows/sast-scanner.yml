@@ -16,9 +16,7 @@ jobs:
       - name: Secret Scanning
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --results=verified,unknown --json > /tmp/trufflehog.json
-      - name: Print Results
-        run: cat /tmp/trufflehog.json
+          extra_args: --results=verified,unknown --json
 
 #on:
 #  push:
