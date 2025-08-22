@@ -36,7 +36,7 @@ jobs:
 
       - name: Print Scan Results
         if: steps.trufflehog.outcome == 'failure'
-        run: cat ${{ steps.trufflehog.outputs.result_file }}
+        run: cat trufflehog-results.json
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
