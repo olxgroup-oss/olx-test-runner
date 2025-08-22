@@ -32,7 +32,7 @@ jobs:
           path: ./
           base: "${{ github.event.repository.default_branch }}"
           head: HEAD
-          extra_args: --results=verified,unverified,unknown --log-level=5
+          extra_args: --results=verified,unverified,unknown --log-level=5 --json
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
