@@ -1,5 +1,5 @@
 name: olx_test_runner
-description: "CLI tool to help running Flutter tests."
+description: "CLI tool to speed up and simplify the process of running unit tests in Dart projects."
 version: 0.10.2
 homepage: https://github.com/olxgroup-oss/olx-test-runner
 repository: https://github.com/olxgroup-oss/olx-test-runner
