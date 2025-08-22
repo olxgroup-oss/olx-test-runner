@@ -2,9 +2,9 @@ name: SAST Scanner
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
