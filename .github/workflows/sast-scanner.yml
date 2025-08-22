@@ -38,6 +38,9 @@ jobs:
       - name: Results
         run: ls -la
 
+      - name: Result2
+        run: echo steps.trufflehog
+
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
