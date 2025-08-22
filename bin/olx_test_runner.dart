@@ -9,4 +9,3 @@ Future<void> main(List<String> arguments) async => launchExecutable(
         entrypoint: testRunnerEntryPoint,
       ),
     );
-bob.jane@fakemail.com
