@@ -154,7 +154,7 @@ class TestValidator {
         for (final error in result.errors) {
           final lineInfo = result.lineInfo.getLocation(error.offset);
           final errorLine =
-              '${error.errorCode.name} at line ${lineInfo.lineNumber}: ${error.message}';
+              '${error.diagnosticCode.name} at line ${lineInfo.lineNumber}: ${error.message}';
           errors.add(errorLine);
         }
         return ValidationResult.invalid(path: filePath, errors: errors);

@@ -242,15 +242,26 @@ class TestRunner {
     return _skipNames.any(testName.contains);
   }
 
+  Map<String, dynamic>? _tryParseLine(String line) {
+    try {
+      if (line.isEmpty || line.contains('test.startedProcess')) {
+        return null;
+      }
+      return jsonDecode(line) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
   List<Event> _getEventFromLine(String line) {
     try {
       return line
           .split('\n')
           .map((line) {
-            if (line.isEmpty || line.contains('test.startedProcess')) {
+            final lineJson = _tryParseLine(line);
+            if (lineJson == null) {
               return null;
             }
-            final lineJson = jsonDecode(line) as Map<String, dynamic>;
             final event = Event.fromJson(lineJson);
             switch (event.type) {
               case EventType.error:
