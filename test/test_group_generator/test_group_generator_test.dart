@@ -153,7 +153,6 @@ void main() {
       expect(firstResultContent == secondResultContent, isFalse);
     });
 
-
     test('should generate the same groups when the same seed has been used',
         () {
       final firstResult = generator.generateTestGroup(

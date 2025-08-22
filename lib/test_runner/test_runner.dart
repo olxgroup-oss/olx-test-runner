@@ -12,7 +12,8 @@ import 'package:olx_test_runner/test_runner/test_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
-  TestRunner({TestGroupGenerator? generator}) : _generator = generator ?? TestGroupGenerator();
+  TestRunner({TestGroupGenerator? generator})
+      : _generator = generator ?? TestGroupGenerator();
 
   static const _skipNames = [
     '(setUp)',
@@ -241,13 +242,12 @@ class TestRunner {
     return _skipNames.any(testName.contains);
   }
 
-  Map<String,dynamic>? _tryParseLine(String line) {
+  Map<String, dynamic>? _tryParseLine(String line) {
     try {
       if (line.isEmpty || line.contains('test.startedProcess')) {
         return null;
       }
       return jsonDecode(line) as Map<String, dynamic>;
-
     } catch (_) {
       return null;
     }
@@ -259,7 +259,7 @@ class TestRunner {
           .split('\n')
           .map((line) {
             final lineJson = _tryParseLine(line);
-            if (lineJson == null){
+            if (lineJson == null) {
               return null;
             }
             final event = Event.fromJson(lineJson);
@@ -304,8 +304,10 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress = CliLogger.logProgress('Test: ${test.name} - running');
-            final testProgress = TestProgress(test: startTest.test, progress: progress);
+            final progress =
+                CliLogger.logProgress('Test: ${test.name} - running');
+            final testProgress =
+                TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
           }
         case EventType.testDone:
