@@ -38,6 +38,9 @@ jobs:
       - name: Results
         run: cat trufflehog_output.json
 
+      - name: Results
+        run: ls -la
+
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
