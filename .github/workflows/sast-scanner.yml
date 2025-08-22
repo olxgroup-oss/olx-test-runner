@@ -34,9 +34,12 @@ jobs:
           head: HEAD
           extra_args: --debug --json
 
-      - name: Print Scan Results
+
+      - name: Results
         if: steps.trufflehog.outcome == 'failure'
-        run: cat trufflehog-results.json
+        run: |
+          echo "TruffleHog found potential secrets in the codebase. Please review the findings below:"
+          echo "${{ steps.trufflehog.outputs.result }}"
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
