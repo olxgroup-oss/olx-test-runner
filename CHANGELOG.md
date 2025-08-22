@@ -1,3 +1,8 @@
+# 0.11.0
+* FEAT: Updated dependencies.
+* FEAT: Updated metadata.
+* FIX: Fixed line parsing for logs.
+
 ## 0.10.2
 * FEAT: Updated dart version constraint in pubspec.yaml.
 
