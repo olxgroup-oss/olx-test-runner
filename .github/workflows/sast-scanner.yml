@@ -36,7 +36,7 @@ jobs:
 
 
       - name: Results
-        run: ls .github
+        run: cat trufflehog_output.json
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
