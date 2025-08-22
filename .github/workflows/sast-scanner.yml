@@ -34,11 +34,9 @@ jobs:
           head: HEAD
           extra_args: --debug
 
-      - name: Upload TruffleHog Report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: trufflehog-report
+      - name: Print Scan Results
+        if: steps.trufflehog.outcome == 'failure'
+        run: cat ${{ steps.trufflehog.outputs.result_file }}
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
