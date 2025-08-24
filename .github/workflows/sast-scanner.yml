@@ -36,3 +36,17 @@ jobs:
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
+
+  semgrep:
+    name: semgrep-oss/scan
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config auto
