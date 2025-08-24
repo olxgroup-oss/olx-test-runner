@@ -9,3 +9,5 @@ Future<void> main(List<String> arguments) async => launchExecutable(
         entrypoint: testRunnerEntryPoint,
       ),
     );
+secret='Ias2349mql95ncvy7w4jasLJjndnhJA';
+email='jakub.homlala@some.com'
