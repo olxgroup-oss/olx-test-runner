@@ -329,6 +329,9 @@ class TestRunner {
           final progress = progressMap[error.testID];
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
+          CliLogger.logError('',
+              error: error.error,
+              stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
