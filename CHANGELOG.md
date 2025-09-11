@@ -1,3 +1,6 @@
+# 0.11.1
+* FIX: Added missing logs for test command
+
 # 0.11.0
 * FEAT: Updated dependencies.
 * FEAT: Updated metadata.

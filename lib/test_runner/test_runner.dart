@@ -12,8 +12,7 @@ import 'package:olx_test_runner/test_runner/test_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
-  TestRunner({TestGroupGenerator? generator})
-      : _generator = generator ?? TestGroupGenerator();
+  TestRunner({TestGroupGenerator? generator}) : _generator = generator ?? TestGroupGenerator();
 
   static const _skipNames = [
     '(setUp)',
@@ -304,10 +303,8 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress =
-                CliLogger.logProgress('Test: ${test.name} - running');
-            final testProgress =
-                TestProgress(test: startTest.test, progress: progress);
+            final progress = CliLogger.logProgress('Test: ${test.name} - running');
+            final testProgress = TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
           }
         case EventType.testDone:
@@ -329,6 +326,8 @@ class TestRunner {
           final progress = progressMap[error.testID];
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
+          CliLogger.logError('',
+              error: error.error, stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
