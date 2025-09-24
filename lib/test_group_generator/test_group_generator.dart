@@ -45,6 +45,13 @@ class TestGroupGenerator {
       final groups =
           _createGroups(testFiles: testFiles, shardCount: shardCount);
 
+      if (groups[shardIndex].isEmpty) {
+        progress.fail(
+          '${shardIndex + 1}/$shardCount No test groups found for current shard.',
+        );
+        return null;
+      }
+
       progress.update('Building test group file');
 
       final file = _createTestGroupFile(

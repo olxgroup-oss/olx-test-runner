@@ -47,7 +47,8 @@ class TestRunner {
       files.addAll(testGroupsFiles);
 
       if (files.isEmpty) {
-        progress.fail('Failed to generate test files');
+        progress.fail(
+            'Failed to generate test files. Tests will be not run for current shard.');
         return results;
       }
 

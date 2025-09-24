@@ -1,5 +1,8 @@
+# 0.11.2
+* FIX: Fixed handling of empty test groups.
+
 # 0.11.1
-* FIX: Added missing logs for test command
+* FIX: Added missing logs for test command.
 
 # 0.11.0
 * FEAT: Updated dependencies.
