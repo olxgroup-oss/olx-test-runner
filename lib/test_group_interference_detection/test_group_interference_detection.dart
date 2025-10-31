@@ -70,6 +70,7 @@ class TestGroupInterferenceDetection {
         final interferenceTestPath = testGroupsSublist[index - 1];
         final interferenceTest = interferenceTestPath.uri.toString().split('/').last;
         progress.complete();
+        CliLogger.logInfo('');
         CliLogger.logInfo('Testing completed');
         CliLogger.logSuccess('========= INTERFERENCE DETECTED =========');
         CliLogger.logSuccess(
@@ -79,6 +80,7 @@ class TestGroupInterferenceDetection {
         CliLogger.logSuccess('=========================================');
         break;
       } else {
+        CliLogger.logInfo('');
         CliLogger.logInfo('No interference solution detected in this run.');
       }
     }

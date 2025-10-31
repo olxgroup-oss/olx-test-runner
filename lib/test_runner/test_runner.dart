@@ -13,7 +13,7 @@ import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
   TestRunner({TestGroupGenerator? generator, bool loggerEnabled = true})
-      : _generator = generator ?? TestGroupGenerator(),
+      : _generator = generator ?? TestGroupGenerator(loggerEnabled: loggerEnabled),
         _loggerEnabled = loggerEnabled;
 
   static const _skipNames = [
