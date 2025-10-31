@@ -22,7 +22,8 @@ class TestValidator {
     final files = _getTestFiles(testPath);
 
     progress.update('Running validation...');
-    final results = await _validateFiles(files: files, loggerProgress: progress);
+    final results =
+        await _validateFiles(files: files, loggerProgress: progress);
 
     progress.complete('Completed validation');
     var warnings = 0;
@@ -161,7 +162,8 @@ class TestValidator {
       // Traverse the AST using our custom visitor
       final warnings = <String>[];
 
-      final visitor = _TestVisitor(lineInfo: result.lineInfo, warnings: warnings);
+      final visitor =
+          _TestVisitor(lineInfo: result.lineInfo, warnings: warnings);
       result.unit.visitChildren(visitor);
       visitor.validateGroupsEmptiness(); // Check for missing `group`
 

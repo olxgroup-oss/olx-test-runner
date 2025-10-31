@@ -13,7 +13,8 @@ import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
   TestRunner({TestGroupGenerator? generator, bool loggerEnabled = true})
-      : _generator = generator ?? TestGroupGenerator(loggerEnabled: loggerEnabled),
+      : _generator =
+            generator ?? TestGroupGenerator(loggerEnabled: loggerEnabled),
         _loggerEnabled = loggerEnabled;
 
   static const _skipNames = [
@@ -36,7 +37,8 @@ class TestRunner {
     String? coveragePath,
     bool? keepGeneratedTestGroups,
   }) async {
-    final progress = CliLogger.logProgress('Generating files', loggerEnabled: _loggerEnabled);
+    final progress = CliLogger.logProgress('Generating files',
+        loggerEnabled: _loggerEnabled);
 
     final results = <TestResult>[];
     final files = <String>[];
@@ -50,7 +52,8 @@ class TestRunner {
       files.addAll(testGroupsFiles);
 
       if (files.isEmpty) {
-        progress.fail('Failed to generate test files. Tests will be not run for current shard.');
+        progress.fail(
+            'Failed to generate test files. Tests will be not run for current shard.');
         return results;
       }
 
@@ -203,7 +206,8 @@ class TestRunner {
       final errorTests = <String>[];
 
       final testFile = File(filePath);
-      final testFileLines = testFile.existsSync() ? testFile.readAsLinesSync() : <String>[];
+      final testFileLines =
+          testFile.existsSync() ? testFile.readAsLinesSync() : <String>[];
 
       for (final progress in progressMap.values) {
         if (progress.completed) {
@@ -211,8 +215,11 @@ class TestRunner {
             failureCount += 1;
             failed = true;
             final rootLine = progress.test.rootLine;
-            if (rootLine != null && rootLine > 0 && rootLine <= testFileLines.length) {
-              errorTests.add(testFileLines[rootLine - 1].trim().replaceAll(';', ''));
+            if (rootLine != null &&
+                rootLine > 0 &&
+                rootLine <= testFileLines.length) {
+              errorTests
+                  .add(testFileLines[rootLine - 1].trim().replaceAll(';', ''));
             }
           } else {
             successCount += 1;
@@ -317,9 +324,11 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress = CliLogger.logProgress('Test: ${test.name} - running',
+            final progress = CliLogger.logProgress(
+                'Test: ${test.name} - running',
                 loggerEnabled: _loggerEnabled);
-            final testProgress = TestProgress(test: startTest.test, progress: progress);
+            final testProgress =
+                TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
           }
         case EventType.testDone:
@@ -341,7 +350,9 @@ class TestRunner {
           final progress = progressMap[error.testID];
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
-          _logError('', error: error.error, stackTrace: StackTrace.fromString(error.stackTrace));
+          _logError('',
+              error: error.error,
+              stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
@@ -411,7 +422,9 @@ class TestRunner {
       CliLogger.logError(message,
           error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
 
-  void _logInfo(String message) => CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
+  void _logInfo(String message) =>
+      CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 
-  void _logSuccess(String message) => CliLogger.logSuccess(message, loggerEnabled: _loggerEnabled);
+  void _logSuccess(String message) =>
+      CliLogger.logSuccess(message, loggerEnabled: _loggerEnabled);
 }

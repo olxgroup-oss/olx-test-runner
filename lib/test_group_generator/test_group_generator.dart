@@ -5,7 +5,8 @@ import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestGroupGenerator {
-  TestGroupGenerator({bool loggerEnabled = true}) : _loggerEnabled = loggerEnabled;
+  TestGroupGenerator({bool loggerEnabled = true})
+      : _loggerEnabled = loggerEnabled;
 
   final bool _loggerEnabled;
 
@@ -26,8 +27,8 @@ class TestGroupGenerator {
         _logError('The path: `$testPath` does not exist.');
         return null;
       }
-      progress =
-          CliLogger.logProgress('Searching for test files...', loggerEnabled: _loggerEnabled);
+      progress = CliLogger.logProgress('Searching for test files...',
+          loggerEnabled: _loggerEnabled);
 
       final testFiles = _getTestFiles(testPath);
 
@@ -46,7 +47,8 @@ class TestGroupGenerator {
 
       progress.update('Creating test groups...');
 
-      final groups = _createGroups(testFiles: testFiles, shardCount: shardCount);
+      final groups =
+          _createGroups(testFiles: testFiles, shardCount: shardCount);
 
       if (groups[shardIndex].isEmpty) {
         progress.fail(
@@ -95,8 +97,8 @@ class TestGroupGenerator {
         _logError('The path: `$testPath` does not exist.');
         return null;
       }
-      progress =
-          CliLogger.logProgress('Searching for test files...', loggerEnabled: _loggerEnabled);
+      progress = CliLogger.logProgress('Searching for test files...',
+          loggerEnabled: _loggerEnabled);
 
       final testFiles = _getTestFiles(testPath);
 
@@ -115,7 +117,8 @@ class TestGroupGenerator {
 
       progress.update('Creating test groups...');
 
-      final groups = _createGroups(testFiles: testFiles, shardCount: shardCount);
+      final groups =
+          _createGroups(testFiles: testFiles, shardCount: shardCount);
 
       if (groups[shardIndex].isEmpty) {
         progress.fail(
@@ -255,5 +258,6 @@ class TestGroupGenerator {
       CliLogger.logError(message,
           error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
 
-  void _logInfo(String message) => CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
+  void _logInfo(String message) =>
+      CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 }

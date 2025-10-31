@@ -9,7 +9,8 @@ import 'package:test/test.dart';
 
 import 'fake_command_runner.dart';
 
-class TestGroupInterferenceDetectionMock extends Mock implements TestGroupInterferenceDetection {}
+class TestGroupInterferenceDetectionMock extends Mock
+    implements TestGroupInterferenceDetection {}
 
 class ExitWrapperMock extends Mock implements ExitWrapper {}
 
@@ -195,7 +196,8 @@ void main() {
           testPath: any(named: 'testPath'),
           shardIndex: any(named: 'shardIndex'),
         ),
-      ).thenAnswer((_) async => TestGroupInterferenceDetectionResult(interferenceFound: false));
+      ).thenAnswer((_) async =>
+          TestGroupInterferenceDetectionResult(interferenceFound: false));
       await commandRunner.run([
         'test-group-interference-detection',
         '--test-path',

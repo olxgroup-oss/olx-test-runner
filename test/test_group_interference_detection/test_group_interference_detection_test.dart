@@ -12,7 +12,8 @@ class MockFile extends Mock implements File {}
 class MockCliLogger extends Mock implements CliLogger {}
 
 void main() {
-  const testFilesWithoutInterference = 'test_files/interference/no_interference';
+  const testFilesWithoutInterference =
+      'test_files/interference/no_interference';
   const testFilesWithInterference = 'test_files/interference/interference';
   const seed = 421499543;
   const shardCount = 1;
@@ -29,7 +30,21 @@ void main() {
       testGroupInterferenceDetection = TestGroupInterferenceDetection();
     });
 
-    test('should not find interference', () async {
+    test('should not find interference if invalid files have been provided',
+        () async {
+      final result = await testGroupInterferenceDetection.run(
+          shardIndex: shardIndex,
+          shardCount: shardCount,
+          testPath: 'invalid_path',
+          seed: seed);
+      expect(result.interferenceFound, isFalse);
+      expect(result.firstErrorTest, isNull);
+      expect(result.interferenceErrorTest, isNull);
+    });
+
+    test(
+        'should not find interference if valid non-interference files have been provided',
+        () async {
       final result = await testGroupInterferenceDetection.run(
           shardIndex: shardIndex,
           shardCount: shardCount,
@@ -40,7 +55,9 @@ void main() {
       expect(result.interferenceErrorTest, isNull);
     });
 
-    test('should find interference', () async {
+    test(
+        'should find interference when valid interference files have been provided',
+        () async {
       final result = await testGroupInterferenceDetection.run(
           shardIndex: shardIndex,
           shardCount: shardCount,

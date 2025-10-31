@@ -49,7 +49,8 @@ class TestGroupGeneratorCommand extends Command<void> {
       return _exitWrapper.exit(1);
     }
 
-    if (shardCount != null && !InputUtils.isNumericGreaterThanZero(shardCount)) {
+    if (shardCount != null &&
+        !InputUtils.isNumericGreaterThanZero(shardCount)) {
       CliLogger.logError(
         'Invalid shard count. It should be a number greater than 0. Please provide it via --shard-count option.',
       );

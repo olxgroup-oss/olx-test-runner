@@ -4,7 +4,8 @@ import 'package:olx_test_runner/test_runner/test_runner.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestGroupInterferenceDetection {
-  TestGroupInterferenceDetection({TestGroupGenerator? generator, TestRunner? testRunner})
+  TestGroupInterferenceDetection(
+      {TestGroupGenerator? generator, TestRunner? testRunner})
       : _generator = generator ?? TestGroupGenerator(loggerEnabled: false),
         _testRunner = testRunner ?? TestRunner(loggerEnabled: false);
 
@@ -45,7 +46,8 @@ class TestGroupInterferenceDetection {
       CliLogger.logInfo('');
       CliLogger.logInfo('Test interference detected on test: $firstErrorTest');
 
-      final normalizedFirstErrorTest = firstErrorTest.replaceAllMapped(_filePattern, (match) {
+      final normalizedFirstErrorTest =
+          firstErrorTest.replaceAllMapped(_filePattern, (match) {
         return '${match.group(1)}.dart';
       });
 
@@ -54,25 +56,31 @@ class TestGroupInterferenceDetection {
 
       /// Generate test groups again to ensure we have the correct grouping
       final testGroups = _generator.generateTestGroup(
-          shardIndex: shardIndex ?? 0, shardCount: shardCount, seed: seed, testPath: testPath);
+          shardIndex: shardIndex ?? 0,
+          shardCount: shardCount,
+          seed: seed,
+          testPath: testPath);
 
       if (testGroups == null || testGroups.isEmpty) {
-        progress.fail('No test groups generated. Exiting interference detection.');
+        progress
+            .fail('No test groups generated. Exiting interference detection.');
         return TestGroupInterferenceDetectionResult(interferenceFound: false);
       }
 
       /// Create a sublist of test groups up to and including the first error test
-      final sublistEndIndex = testGroups.indexWhere(
-          (testGroupItem) => testGroupItem.uri.toString().contains(normalizedFirstErrorTest));
+      final sublistEndIndex = testGroups.indexWhere((testGroupItem) =>
+          testGroupItem.uri.toString().contains(normalizedFirstErrorTest));
 
       /// If the first error test is not found in the test groups, use the full list
       /// for interference detection
-      final testGroupsSublist =
-          sublistEndIndex != -1 ? testGroups.sublist(0, sublistEndIndex + 1) : testGroups;
+      final testGroupsSublist = sublistEndIndex != -1
+          ? testGroups.sublist(0, sublistEndIndex + 1)
+          : testGroups;
 
       /// Now, iteratively run tests removing one test at a time from the start
       for (var index = 0; index < testGroupsSublist.length; index++) {
-        progress.update('Testing interference ${index + 1}/${testGroupsSublist.length}.');
+        progress.update(
+            'Testing interference ${index + 1}/${testGroupsSublist.length}.');
 
         final newTestGroupsSublist = testGroupsSublist.sublist(index);
 
@@ -90,7 +98,8 @@ class TestGroupInterferenceDetection {
 
         if (results.errorTests.isEmpty) {
           final interferenceTestPath = testGroupsSublist[index - 1];
-          final interferenceTest = interferenceTestPath.uri.toString().split('/').last;
+          final interferenceTest =
+              interferenceTestPath.uri.toString().split('/').last;
           _printInterferenceFound(
               progress: progress,
               firstErrorTest: normalizedFirstErrorTest,

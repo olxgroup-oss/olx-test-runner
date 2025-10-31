@@ -145,7 +145,8 @@ void main() {
       verify(() => mockExitWrapper.exit(1));
     });
 
-    test('should exit with error if generate fails and there are no results', () async {
+    test('should exit with error if generate fails and there are no results',
+        () async {
       when(
         () => mockTestGroupGenerator.generateTestGroups(
           shardCount: any(named: 'shardCount'),
@@ -189,8 +190,10 @@ void main() {
       verifyNever(() => mockExitWrapper.exit(1));
     });
 
-    test('should generate test groups if test path and seed are provided', () async {
-      await commandRunner.run(['generate', '--test-path', testFiles, '--seed', '$seed']);
+    test('should generate test groups if test path and seed are provided',
+        () async {
+      await commandRunner
+          .run(['generate', '--test-path', testFiles, '--seed', '$seed']);
 
       verify(
         () => mockTestGroupGenerator.generateTestGroups(
@@ -203,7 +206,9 @@ void main() {
       verifyNever(() => mockExitWrapper.exit(1));
     });
 
-    test('should generate test groups if test path, seed and shard count are provided', () async {
+    test(
+        'should generate test groups if test path, seed and shard count are provided',
+        () async {
       await commandRunner.run(
         [
           'generate',
@@ -227,7 +232,8 @@ void main() {
       verifyNever(() => mockExitWrapper.exit(1));
     });
 
-    test('should generate test groups if test path, seed, shard count and shard index are provided',
+    test(
+        'should generate test groups if test path, seed, shard count and shard index are provided',
         () async {
       await commandRunner.run([
         'generate',

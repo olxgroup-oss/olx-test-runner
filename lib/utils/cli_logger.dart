@@ -80,7 +80,8 @@ class CliLogger {
     _logger.warn(message, tag: '');
   }
 
-  static CliLoggerProgress logProgress(String message, {bool loggerEnabled = true}) {
+  static CliLoggerProgress logProgress(String message,
+      {bool loggerEnabled = true}) {
     return CliLoggerProgress(
         logger: _logger, initialMessage: message, loggerEnabled: loggerEnabled);
   }
@@ -88,7 +89,9 @@ class CliLogger {
 
 class CliLoggerProgress {
   CliLoggerProgress(
-      {required Logger logger, required String initialMessage, bool loggerEnabled = true})
+      {required Logger logger,
+      required String initialMessage,
+      bool loggerEnabled = true})
       : _logger = logger {
     if (loggerEnabled) {
       _progress = _logger.progress(initialMessage);

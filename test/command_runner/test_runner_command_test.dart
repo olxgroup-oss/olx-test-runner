@@ -120,7 +120,9 @@ void main() {
       verifyTestRunNotStarted();
     });
 
-    test('should exit with error if shard index is greater or equals shard count', () async {
+    test(
+        'should exit with error if shard index is greater or equals shard count',
+        () async {
       await commandRunner.run([
         'test',
         '--shard-index',
@@ -288,7 +290,9 @@ void main() {
       );
     });
 
-    test('should run test if test path, shard count and shard index are provided', () async {
+    test(
+        'should run test if test path, shard count and shard index are provided',
+        () async {
       mockSuccessRun();
 
       await commandRunner.run([
@@ -315,7 +319,9 @@ void main() {
       );
     });
 
-    test('should run test if test path, shard count, shard index and seed are provided', () async {
+    test(
+        'should run test if test path, shard count, shard index and seed are provided',
+        () async {
       mockSuccessRun();
 
       await commandRunner.run([
