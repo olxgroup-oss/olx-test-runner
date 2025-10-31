@@ -30,10 +30,10 @@ class TestGroupInterferenceDetectionCommand extends Command<void> {
   final ExitWrapper _exitWrapper;
 
   @override
-  String get description => 'Validates, generates and runs tests.';
+  String get description => 'Detects interference between tests.';
 
   @override
-  String get name => 'test-interference-detection';
+  String get name => 'test-group-interference-detection';
 
   @override
   Future<void> run() async {
