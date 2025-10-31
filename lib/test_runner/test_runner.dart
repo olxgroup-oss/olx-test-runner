@@ -54,7 +54,7 @@ class TestRunner {
 
       for (var fileIndex = 0; fileIndex < files.length; fileIndex++) {
         results.add(
-          await _runTests(
+          await runTests(
             shardIndex: fileIndex,
             totalShardCount: files.length,
             filePath: files[fileIndex],
@@ -122,7 +122,7 @@ class TestRunner {
     int? seed,
   }) {
     if (shardIndex != null) {
-      final file = _generator.generateTestGroup(
+      final file = _generator.generateTestGroupFile(
         shardIndex: shardIndex,
         shardCount: shardCount,
         seed: seed,
@@ -144,7 +144,7 @@ class TestRunner {
 
   String _formatDuration(Duration duration) => duration.toString();
 
-  Future<TestResult> _runTests({
+  Future<TestResult> runTests({
     required int shardIndex,
     required int totalShardCount,
     required String filePath,

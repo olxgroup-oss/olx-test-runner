@@ -50,7 +50,7 @@ void main() {
     test(
         'should returns null if no test files are found in the provided directory when generateFile has been called',
         () {
-      final result = generator.generateTestGroup(
+      final result = generator.generateTestGroupFile(
         shardIndex: shardIndex,
         shardCount: shardCount,
         testPath: 'invalid_path',
@@ -71,7 +71,7 @@ void main() {
     test(
         'should generate the correct group file for sharded test when generateFile has been called',
         () {
-      final result = generator.generateTestGroup(
+      final result = generator.generateTestGroupFile(
         shardIndex: shardIndex,
         shardCount: shardCount,
         testPath: testFiles,
@@ -84,7 +84,7 @@ void main() {
     test(
         'should generate the correct group file for not sharded test when generateFile has been called',
         () {
-      final result = generator.generateTestGroup(
+      final result = generator.generateTestGroupFile(
         shardIndex: 0,
         shardCount: 1,
         testPath: testFiles,
@@ -94,9 +94,7 @@ void main() {
       verifyFileContent(fileContent: fileContent, shardIndex: 0, shardCount: 1);
     });
 
-    test(
-        'should generate the correct group files when generateFiles has been called',
-        () {
+    test('should generate the correct group files when generateFiles has been called', () {
       final results = generator.generateTestGroups(
         shardCount: shardCount,
         testPath: testFiles,
@@ -116,8 +114,7 @@ void main() {
     test(
         'should generate the correct group files when generateFiles has been called with only one group',
         () {
-      final results =
-          generator.generateTestGroups(shardCount: 1, testPath: testFiles);
+      final results = generator.generateTestGroups(shardCount: 1, testPath: testFiles);
       expect(results.length, 1);
       for (var index = 0; index < results.length; index++) {
         final result = results[index];
@@ -130,9 +127,8 @@ void main() {
       }
     });
 
-    test('should generate different groups when different seed has been used',
-        () {
-      final firstResult = generator.generateTestGroup(
+    test('should generate different groups when different seed has been used', () {
+      final firstResult = generator.generateTestGroupFile(
         shardIndex: 0,
         shardCount: 1,
         seed: firstSeed,
@@ -141,7 +137,7 @@ void main() {
       expect(firstResult, isNotNull);
       final firstResultContent = File(firstResult!).readAsStringSync();
 
-      final secondResult = generator.generateTestGroup(
+      final secondResult = generator.generateTestGroupFile(
         shardIndex: 0,
         shardCount: 1,
         seed: anotherSeed,
@@ -153,9 +149,8 @@ void main() {
       expect(firstResultContent == secondResultContent, isFalse);
     });
 
-    test('should generate the same groups when the same seed has been used',
-        () {
-      final firstResult = generator.generateTestGroup(
+    test('should generate the same groups when the same seed has been used', () {
+      final firstResult = generator.generateTestGroupFile(
         shardIndex: 0,
         shardCount: 1,
         seed: firstSeed,
@@ -164,7 +159,7 @@ void main() {
       expect(firstResult, isNotNull);
       final firstResultContent = File(firstResult!).readAsStringSync();
 
-      final secondResult = generator.generateTestGroup(
+      final secondResult = generator.generateTestGroupFile(
         shardIndex: 0,
         shardCount: 1,
         seed: firstSeed,
