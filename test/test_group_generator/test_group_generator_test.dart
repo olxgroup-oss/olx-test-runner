@@ -61,7 +61,7 @@ void main() {
     test(
         'should returns empty list if no test files are found in the provided directory when generateFile has been called',
         () {
-      final result = generator.generateTestGroups(
+      final result = generator.generateTestGroupFiles(
         shardCount: shardCount,
         testPath: 'invalid_path',
       );
@@ -97,7 +97,7 @@ void main() {
     test(
         'should generate the correct group files when generateFiles has been called',
         () {
-      final results = generator.generateTestGroups(
+      final results = generator.generateTestGroupFiles(
         shardCount: shardCount,
         testPath: testFiles,
       );
@@ -117,7 +117,7 @@ void main() {
         'should generate the correct group files when generateFiles has been called with only one group',
         () {
       final results =
-          generator.generateTestGroups(shardCount: 1, testPath: testFiles);
+          generator.generateTestGroupFiles(shardCount: 1, testPath: testFiles);
       expect(results.length, 1);
       for (var index = 0; index < results.length; index++) {
         final result = results[index];

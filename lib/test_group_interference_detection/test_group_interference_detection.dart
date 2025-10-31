@@ -55,7 +55,7 @@ class TestGroupInterferenceDetection {
       CliLogger.logInfo('The first failing test is $normalizedFirstErrorTest');
 
       /// Generate test groups again to ensure we have the correct grouping
-      final testGroups = _generator.generateTestGroup(
+      final testGroups = _generator.getTestGroup(
           shardIndex: shardIndex ?? 0,
           shardCount: shardCount,
           seed: seed,

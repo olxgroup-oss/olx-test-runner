@@ -30,7 +30,7 @@ void main() {
       mockTestGroupGenerator = TestGroupGeneratorMock();
       mockExitWrapper = ExitWrapperMock();
       when(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: any(named: 'shardCount'),
           seed: any(named: 'seed'),
           testPath: any(named: 'testPath'),
@@ -148,7 +148,7 @@ void main() {
     test('should exit with error if generate fails and there are no results',
         () async {
       when(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: any(named: 'shardCount'),
           seed: any(named: 'seed'),
           testPath: any(named: 'testPath'),
@@ -162,7 +162,7 @@ void main() {
       ]);
 
       verify(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: any(named: 'shardCount'),
           seed: any(named: 'seed'),
           testPath: any(named: 'testPath'),
@@ -180,7 +180,7 @@ void main() {
       ]);
 
       verify(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: any(named: 'shardCount'),
           seed: any(named: 'seed'),
           testPath: any(named: 'testPath'),
@@ -196,7 +196,7 @@ void main() {
           .run(['generate', '--test-path', testFiles, '--seed', '$seed']);
 
       verify(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: any(named: 'shardCount'),
           seed: seed,
           testPath: testFiles,
@@ -222,7 +222,7 @@ void main() {
       );
 
       verify(
-        () => mockTestGroupGenerator.generateTestGroups(
+        () => mockTestGroupGenerator.generateTestGroupFiles(
           shardCount: shardCount,
           seed: seed,
           testPath: testFiles,

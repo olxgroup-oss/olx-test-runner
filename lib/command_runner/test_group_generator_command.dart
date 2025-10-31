@@ -96,7 +96,7 @@ class TestGroupGeneratorCommand extends Command<void> {
       }
     } else {
       results.addAll(
-        _testGroupGenerator.generateTestGroups(
+        _testGroupGenerator.generateTestGroupFiles(
           shardCount: shardCountNumeric,
           seed: seedNumeric,
           testPath: testPath,

@@ -142,7 +142,7 @@ class TestRunner {
         return [];
       }
     } else {
-      return _generator.generateTestGroups(
+      return _generator.generateTestGroupFiles(
         shardCount: shardCount,
         seed: seed,
         testPath: testPath,

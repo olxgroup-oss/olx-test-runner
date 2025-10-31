@@ -10,6 +10,8 @@ class TestGroupGenerator {
 
   final bool _loggerEnabled;
 
+  /// Detects test files in the provided [testPath] and generates test group file for specific shard.
+  /// Returns created file path.
   String? generateTestGroupFile({
     required int shardIndex,
     required int shardCount,
@@ -79,8 +81,36 @@ class TestGroupGenerator {
     }
   }
 
-  /// Generates test group for specific shard.
-  List<FileSystemEntity>? generateTestGroup({
+  /// Generates test group files for all shards.
+  /// Returns list of created file paths.
+  List<String> generateTestGroupFiles({
+    required int shardCount,
+    required String testPath,
+    int? seed,
+  }) {
+    final filePaths = <String>[];
+    if (!InputUtils.validateDirExists(testPath)) {
+      _logError('The path: `$testPath` does not exist.');
+      return filePaths;
+    }
+
+    for (var shardIndex = 0; shardIndex < shardCount; shardIndex++) {
+      final filePath = generateTestGroupFile(
+        shardIndex: shardIndex,
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
+      );
+      if (filePath != null) {
+        filePaths.add(filePath);
+      }
+    }
+    return filePaths;
+  }
+
+  /// Detects test files in the provided [testPath] and creates test groups for specific shard.
+  /// Returns list of test files in the group.
+  List<FileSystemEntity>? getTestGroup({
     required int shardIndex,
     required int shardCount,
     required String testPath,
@@ -141,47 +171,6 @@ class TestGroupGenerator {
     }
   }
 
-  List<List<FileSystemEntity>> _createGroups({
-    required List<FileSystemEntity> testFiles,
-    required int shardCount,
-  }) {
-    final filesPerGroup = (testFiles.length / shardCount).ceil();
-    final groups = <List<FileSystemEntity>>[];
-
-    for (var index = 0; index < shardCount; index++) {
-      groups.add(
-        testFiles.skip(index * filesPerGroup).take(filesPerGroup).toList(),
-      );
-    }
-    return groups;
-  }
-
-  /// Generates test group files for all shards.
-  List<String> generateTestGroups({
-    required int shardCount,
-    required String testPath,
-    int? seed,
-  }) {
-    final filePaths = <String>[];
-    if (!InputUtils.validateDirExists(testPath)) {
-      _logError('The path: `$testPath` does not exist.');
-      return filePaths;
-    }
-
-    for (var shardIndex = 0; shardIndex < shardCount; shardIndex++) {
-      final filePath = generateTestGroupFile(
-        shardIndex: shardIndex,
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-      if (filePath != null) {
-        filePaths.add(filePath);
-      }
-    }
-    return filePaths;
-  }
-
   /// Creates test group file for specific shard.
   /// Returns created file.
   File createTestGroupFile({
@@ -214,6 +203,8 @@ class TestGroupGenerator {
       ..writeAsStringSync(buffer.toString());
   }
 
+  /// Retrieves all test files from the provided [testPath].
+  /// Returns list of test files.
   List<FileSystemEntity> _getTestFiles(String testPath) {
     final testDirectory = Directory(testPath);
 
@@ -228,6 +219,25 @@ class TestGroupGenerator {
     return testGroups;
   }
 
+  /// Creates groups of test files based on the [shardCount].
+  /// Returns list of test file groups.
+  List<List<FileSystemEntity>> _createGroups({
+    required List<FileSystemEntity> testFiles,
+    required int shardCount,
+  }) {
+    final filesPerGroup = (testFiles.length / shardCount).ceil();
+    final groups = <List<FileSystemEntity>>[];
+
+    for (var index = 0; index < shardCount; index++) {
+      groups.add(
+        testFiles.skip(index * filesPerGroup).take(filesPerGroup).toList(),
+      );
+    }
+    return groups;
+  }
+
+  /// Creates file at specified [testPath] for given [shardIndex].
+  /// Returns created file.
   File _createFile({required String testPath, required int shardIndex}) {
     final file = File('$testPath/generated_test_group_$shardIndex.dart');
     if (file.existsSync()) {
@@ -254,10 +264,12 @@ class TestGroupGenerator {
     return '${path}_$hashHex';
   }
 
+  /// Logs error message with optional [error] and [stackTrace].
   void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
       CliLogger.logError(message,
           error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
 
+  /// Logs info message.
   void _logInfo(String message) =>
       CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 }
