@@ -1,13 +1,13 @@
 class TestResult {
-  TestResult({
-    required this.index,
-    required this.filePath,
-    required this.isSuccess,
-    required this.duration,
-    required this.totalTestsCount,
-    required this.successTestsCount,
-    required this.errorTestsCount,
-  });
+  TestResult(
+      {required this.index,
+      required this.filePath,
+      required this.isSuccess,
+      required this.duration,
+      required this.totalTestsCount,
+      required this.successTestsCount,
+      required this.errorTestsCount,
+      required this.errorTests});
 
   final int index;
   final String filePath;
@@ -16,4 +16,5 @@ class TestResult {
   final int totalTestsCount;
   final int successTestsCount;
   final int errorTestsCount;
+  final List<String> errorTests;
 }

@@ -25,12 +25,7 @@ class TestGroupGenerator {
       }
       progress = CliLogger.logProgress('Searching for test files...');
 
-      final testFiles = _getTestFiles(testPath);
-
-      if (seed != null) {
-        progress.update('Shuffling...');
-        testFiles.shuffle(Random(seed));
-      }
+      final testFiles = getTestFilesShuffled(testPath: testPath, seed: seed);
 
       if (testFiles.isEmpty) {
         progress.fail(
@@ -42,8 +37,7 @@ class TestGroupGenerator {
 
       progress.update('Creating test groups...');
 
-      final groups =
-          _createGroups(testFiles: testFiles, shardCount: shardCount);
+      final groups = _createGroups(testFiles: testFiles, shardCount: shardCount);
 
       if (groups[shardIndex].isEmpty) {
         progress.fail(
@@ -156,6 +150,14 @@ class TestGroupGenerator {
       ..sort((item1, item2) => item1.path.compareTo(item2.path));
 
     return testGroups;
+  }
+
+  List<FileSystemEntity> getTestFilesShuffled({required String testPath, int? seed}) {
+    final testFiles = _getTestFiles(testPath);
+    if (seed != null) {
+      testFiles.shuffle(Random(seed));
+    }
+    return testFiles;
   }
 
   File _createFile({required String testPath, required int shardIndex}) {

@@ -1,0 +1,92 @@
+import 'package:args/command_runner.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
+import 'package:olx_test_runner/utils/exit.dart';
+import 'package:olx_test_runner/utils/input_utils.dart';
+
+class TestGroupInterferenceDetectionCommand extends Command<void> {
+  TestGroupInterferenceDetectionCommand(
+      {TestGroupInterferenceDetection? testGroupInterferenceDetection, ExitWrapper? exitWrapper})
+      : _testGroupInterferenceDetection =
+            testGroupInterferenceDetection ?? TestGroupInterferenceDetection(),
+        _exitWrapper = exitWrapper ?? ExitWrapper() {
+    argParser
+      ..addOption(
+        'shard-index',
+        help: '(Optional) Index of the shard',
+      )
+      ..addOption('shard-count', help: '(Optional) Total count of shards')
+      ..addOption(
+        'seed',
+        help: '(Optional) Number used to randomize test groups.',
+      )
+      ..addOption(
+        'test-path',
+        help: 'Path to the tests.',
+      );
+  }
+
+  final TestGroupInterferenceDetection _testGroupInterferenceDetection;
+  final ExitWrapper _exitWrapper;
+
+  @override
+  String get description => 'Validates, generates and runs tests.';
+
+  @override
+  String get name => 'test-interference-detection';
+
+  @override
+  Future<void> run() async {
+    final shardIndex = argResults?.option('shard-index');
+    final shardCount = argResults?.option('shard-count');
+    final seed = argResults?.option('seed');
+    final testPath = argResults?.option('test-path');
+
+    if (shardIndex != null && !InputUtils.isNumericPositive(shardIndex)) {
+      CliLogger.logError(
+        'Invalid shard index. It should be a positive number. Please provide it via --shard-index option.',
+      );
+      return _exitWrapper.exit(1);
+    }
+
+    if (shardCount != null && !InputUtils.isNumericGreaterThanZero(shardCount)) {
+      CliLogger.logError(
+        'Invalid shard count. It should be a number greater than 0. Please provide it via --shard-count option.',
+      );
+      return _exitWrapper.exit(1);
+    }
+
+    final shardIndexNumeric = int.tryParse(shardIndex ?? '');
+    final shardCountNumeric = int.tryParse(shardCount ?? '') ?? 1;
+
+    if (shardIndexNumeric != null && shardIndexNumeric >= shardCountNumeric) {
+      CliLogger.logError(
+        "Shard index can't be greater or equals than shard count.",
+      );
+      return _exitWrapper.exit(1);
+    }
+
+    if (seed != null && !InputUtils.isNumericPositive(seed)) {
+      CliLogger.logError(
+        'Invalid seed. It should be a positive number. Please provide it via --seed option.',
+      );
+      return _exitWrapper.exit(1);
+    }
+
+    if (testPath == null || testPath.isEmpty == true) {
+      CliLogger.logError(
+        'Invalid test path. Please provide it via --test-path option.',
+      );
+      return _exitWrapper.exit(1);
+    }
+
+    final seedNumeric = int.tryParse(seed ?? '');
+
+    await _testGroupInterferenceDetection.run(
+      shardCount: shardCountNumeric,
+      seed: seedNumeric,
+      testPath: testPath,
+      shardIndex: shardIndexNumeric,
+    );
+  }
+}

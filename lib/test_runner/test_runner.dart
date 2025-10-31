@@ -12,8 +12,7 @@ import 'package:olx_test_runner/test_runner/test_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
-  TestRunner({TestGroupGenerator? generator})
-      : _generator = generator ?? TestGroupGenerator();
+  TestRunner({TestGroupGenerator? generator}) : _generator = generator ?? TestGroupGenerator();
 
   static const _skipNames = [
     '(setUp)',
@@ -47,8 +46,7 @@ class TestRunner {
       files.addAll(testGroupsFiles);
 
       if (files.isEmpty) {
-        progress.fail(
-            'Failed to generate test files. Tests will be not run for current shard.');
+        progress.fail('Failed to generate test files. Tests will be not run for current shard.');
         return results;
       }
 
@@ -197,11 +195,20 @@ class TestRunner {
       var successCount = 0;
       var failureCount = 0;
       var failed = await process.exitCode != 0;
+      final errorTests = <String>[];
+
+      final testFile = File(filePath);
+      final testFileLines = testFile.existsSync() ? testFile.readAsLinesSync() : <String>[];
+
       for (final progress in progressMap.values) {
         if (progress.completed) {
           if (progress.failed) {
             failureCount += 1;
             failed = true;
+            final rootLine = progress.test.rootLine;
+            if (rootLine != null && rootLine > 0 && rootLine <= testFileLines.length) {
+              errorTests.add(testFileLines[rootLine - 1].trim().replaceAll(';', ''));
+            }
           } else {
             successCount += 1;
           }
@@ -212,14 +219,14 @@ class TestRunner {
         'Completed test group ${shardIndex + 1}/$totalShardCount',
       );
       return TestResult(
-        index: shardIndex,
-        filePath: filePath,
-        isSuccess: !failed,
-        duration: duration,
-        totalTestsCount: progressMap.length,
-        successTestsCount: successCount,
-        errorTestsCount: failureCount,
-      );
+          index: shardIndex,
+          filePath: filePath,
+          isSuccess: !failed,
+          duration: duration,
+          totalTestsCount: progressMap.length,
+          successTestsCount: successCount,
+          errorTestsCount: failureCount,
+          errorTests: errorTests);
     } catch (error, stackTrace) {
       CliLogger.logError(
         'Running test failed',
@@ -227,14 +234,14 @@ class TestRunner {
         stackTrace: stackTrace,
       );
       return TestResult(
-        index: shardIndex,
-        filePath: filePath,
-        isSuccess: false,
-        duration: Duration.zero,
-        totalTestsCount: 0,
-        successTestsCount: 0,
-        errorTestsCount: 1,
-      );
+          index: shardIndex,
+          filePath: filePath,
+          isSuccess: false,
+          duration: Duration.zero,
+          totalTestsCount: 0,
+          successTestsCount: 0,
+          errorTestsCount: 1,
+          errorTests: [filePath]);
     }
   }
 
@@ -305,10 +312,8 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress =
-                CliLogger.logProgress('Test: ${test.name} - running');
-            final testProgress =
-                TestProgress(test: startTest.test, progress: progress);
+            final progress = CliLogger.logProgress('Test: ${test.name} - running');
+            final testProgress = TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
           }
         case EventType.testDone:
@@ -331,8 +336,7 @@ class TestRunner {
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
           CliLogger.logError('',
-              error: error.error,
-              stackTrace: StackTrace.fromString(error.stackTrace));
+              error: error.error, stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
@@ -342,6 +346,14 @@ class TestRunner {
         case EventType.unknown:
       }
     }
+  }
+
+  String _getFailedTestFile({required String testFilePath, required int lineNumber}) {
+    final file = File(testFilePath);
+    if (!file.existsSync()) return '';
+    final lines = file.readAsLinesSync();
+    if (lineNumber < 1 || lineNumber > lines.length) return '';
+    return lines[lineNumber - 1];
   }
 
   Future<String?> _createResultsFile({
