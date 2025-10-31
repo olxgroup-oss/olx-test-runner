@@ -16,17 +16,17 @@ class TestGroupInterferenceDetection {
     int? shardIndex,
     int? seed,
   }) async {
-    final progress = CliLogger.logProgress('Running normal tests');
+    CliLogger.logInfo('Running test group normally to detect failing tests...');
     final result = await _testRunner.run(
         shardCount: shardCount,
         testPath: testPath,
         shardIndex: shardIndex,
         seed: seed,
         keepGeneratedTestGroups: true);
-    progress.complete('Completed normal tests');
+    CliLogger.logInfo('Analyzing results...');
 
     if (result.first.errorTests.isEmpty) {
-      CliLogger.logInfo('No test interference detected.');
+      CliLogger.logInfo('No test interference detected. All tests passed.');
       return;
     }
 
@@ -44,32 +44,38 @@ class TestGroupInterferenceDetection {
     CliLogger.logInfo("The first failing test is $normalizedTest");
 
     final testGroups = _generator.generateTestGroup(
-        shardIndex: shardIndex ?? 0, shardCount: shardCount, testPath: testPath);
+        shardIndex: shardIndex ?? 0, shardCount: shardCount, seed: seed, testPath: testPath);
     final sublistEndIndex =
         testGroups!.indexWhere((tg) => tg.uri.toString().contains(normalizedTest));
     final testGroupsSublist =
         sublistEndIndex != -1 ? testGroups.sublist(0, sublistEndIndex + 1) : testGroups;
 
-    for (var index = 0; index < testGroupsSublist.length - 1; index++) {
-      print("TESTING WITH INDEX $index");
-      var newTestGroupsSublist = testGroupsSublist.sublist(index);
+    for (var index = 0; index < testGroupsSublist.length; index++) {
+      CliLogger.logInfo('Testing ${index + 1}/${testGroupsSublist.length}...');
+      final newTestGroupsSublist = testGroupsSublist.sublist(index);
       final file = _generator.createTestGroupFile(
           shardIndex: shardIndex ?? 0,
           shardCount: shardCount,
           testPath: testPath,
           groups: newTestGroupsSublist);
-      print("File created");
-      print(file.existsSync());
       final results = await _testRunner.runTests(
           shardIndex: shardIndex ?? 0,
           totalShardCount: shardCount,
           filePath: file.path,
           resultsFilePath: null);
       if (results.errorTests.isEmpty) {
-        final interferenceTest = testGroupsSublist[index - 1];
-        CliLogger.logInfo(
-            "Test interference detected! The interfering test is: ${interferenceTest.uri}");
+        final interferenceTestPath = testGroupsSublist[index - 1];
+        final interferenceTest = interferenceTestPath.uri.toString().split('/').last;
+        CliLogger.logInfo('');
+        CliLogger.logSuccess('========= INTERFERENCE DETECTED =========');
+        CliLogger.logSuccess(
+            'Test file located in $normalizedTest has interference with ${interferenceTest}');
+        CliLogger.logSuccess(
+            'This means that $normalizedTest should be investigated for side effects.');
+        CliLogger.logSuccess('=========================================');
         break;
+      } else {
+        CliLogger.logInfo('No interference solution detected in this run.');
       }
     }
   }
