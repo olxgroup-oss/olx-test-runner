@@ -1,29 +1,33 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:mason_logger/mason_logger.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestGroupGenerator {
+  TestGroupGenerator({bool loggerEnabled = true}) : _loggerEnabled = loggerEnabled;
+
+  final bool _loggerEnabled;
+
   String? generateTestGroupFile({
     required int shardIndex,
     required int shardCount,
     required String testPath,
     int? seed,
   }) {
-    Progress? progress;
+    CliLoggerProgress? progress;
     try {
-      CliLogger.logInfo(
+      _logInfo(
         'Generating test groups for `$testPath`. Test group index: $shardIndex, total groups:'
         ' $shardCount ${seed != null ? 'Seed: $seed.' : ''}',
       );
 
       if (!InputUtils.validateDirExists(testPath)) {
-        CliLogger.logError('The path: `$testPath` does not exist.');
+        _logError('The path: `$testPath` does not exist.');
         return null;
       }
-      progress = CliLogger.logProgress('Searching for test files...');
+      progress =
+          CliLogger.logProgress('Searching for test files...', loggerEnabled: _loggerEnabled);
 
       final testFiles = _getTestFiles(testPath);
 
@@ -63,7 +67,7 @@ class TestGroupGenerator {
       progress.complete('Generated test group file: ${file.path}');
       return file.path;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to generate test groups',
         error: error,
         stackTrace: stackTrace,
@@ -80,18 +84,19 @@ class TestGroupGenerator {
     required String testPath,
     int? seed,
   }) {
-    Progress? progress;
+    CliLoggerProgress? progress;
     try {
-      CliLogger.logInfo(
+      _logInfo(
         'Generating test groups for `$testPath`. Test group index: $shardIndex, total groups:'
         ' $shardCount ${seed != null ? 'Seed: $seed.' : ''}',
       );
 
       if (!InputUtils.validateDirExists(testPath)) {
-        CliLogger.logError('The path: `$testPath` does not exist.');
+        _logError('The path: `$testPath` does not exist.');
         return null;
       }
-      progress = CliLogger.logProgress('Searching for test files...');
+      progress =
+          CliLogger.logProgress('Searching for test files...', loggerEnabled: _loggerEnabled);
 
       final testFiles = _getTestFiles(testPath);
 
@@ -123,7 +128,7 @@ class TestGroupGenerator {
 
       return groups[shardIndex];
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to generate test groups',
         error: error,
         stackTrace: stackTrace,
@@ -156,7 +161,7 @@ class TestGroupGenerator {
   }) {
     final filePaths = <String>[];
     if (!InputUtils.validateDirExists(testPath)) {
-      CliLogger.logError('The path: `$testPath` does not exist.');
+      _logError('The path: `$testPath` does not exist.');
       return filePaths;
     }
 
@@ -245,4 +250,10 @@ class TestGroupGenerator {
 
     return '${path}_$hashHex';
   }
+
+  void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
+      CliLogger.logError(message,
+          error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
+
+  void _logInfo(String message) => CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 }

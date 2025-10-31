@@ -1,5 +1,5 @@
-import 'package:mason_logger/mason_logger.dart';
 import 'package:olx_test_runner/test_runner/test_event.dart';
+import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestProgress {
   TestProgress({
@@ -10,7 +10,7 @@ class TestProgress {
   });
 
   final Test test;
-  final Progress progress;
+  final CliLoggerProgress progress;
   bool completed;
   bool failed;
 }

@@ -12,7 +12,9 @@ import 'package:olx_test_runner/test_runner/test_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
-  TestRunner({TestGroupGenerator? generator}) : _generator = generator ?? TestGroupGenerator();
+  TestRunner({TestGroupGenerator? generator, bool loggerEnabled = true})
+      : _generator = generator ?? TestGroupGenerator(),
+        _loggerEnabled = loggerEnabled;
 
   static const _skipNames = [
     '(setUp)',
@@ -22,6 +24,7 @@ class TestRunner {
   ];
 
   final TestGroupGenerator _generator;
+  final bool _loggerEnabled;
 
   Future<List<TestResult>> run({
     required int shardCount,
@@ -33,7 +36,8 @@ class TestRunner {
     String? coveragePath,
     bool? keepGeneratedTestGroups,
   }) async {
-    final progress = CliLogger.logProgress('Generating files');
+    final progress = CliLogger.logProgress('Generating files', loggerEnabled: _loggerEnabled);
+
     final results = <TestResult>[];
     final files = <String>[];
     try {
@@ -68,15 +72,16 @@ class TestRunner {
 
       final totalTime = _calculateTotalTestTime(results);
 
-      CliLogger.logSuccess(' ');
-      CliLogger.logSuccess(
+      _logSuccess(' ');
+      _logSuccess(
         'Running tests completed in ${_formatDuration(totalTime)}',
       );
 
       _printTestsSummary(results);
     } catch (error, stackTrace) {
       progress.fail('Running tests failed');
-      CliLogger.logError(
+
+      _logError(
         'Running tests failed',
         error: error,
         stackTrace: stackTrace,
@@ -104,11 +109,11 @@ class TestRunner {
           '${result.index + 1}/${results.length} - test count: ${result.totalTestsCount} -'
           ' success: ${result.successTestsCount} - failure: ${result.errorTestsCount} -';
       if (result.isSuccess) {
-        CliLogger.logSuccess(
+        _logSuccess(
           '$baseMessage completed successfully in $timeFormatted',
         );
       } else {
-        CliLogger.logError(
+        _logError(
           '$baseMessage completed with failure in $timeFormatted',
         );
       }
@@ -165,7 +170,7 @@ class TestRunner {
       final stopwatch = Stopwatch()..start();
       final progressMap = <int, TestProgress>{};
 
-      CliLogger.logInfo(
+      _logInfo(
         'Running test group: ${shardIndex + 1}/$totalShardCount',
       );
 
@@ -215,7 +220,7 @@ class TestRunner {
         }
       }
 
-      CliLogger.logInfo(
+      _logInfo(
         'Completed test group ${shardIndex + 1}/$totalShardCount',
       );
       return TestResult(
@@ -228,7 +233,7 @@ class TestRunner {
           errorTestsCount: failureCount,
           errorTests: errorTests);
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Running test failed',
         error: error,
         stackTrace: stackTrace,
@@ -287,7 +292,7 @@ class TestRunner {
           .nonNulls
           .toList();
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to parse line: $line',
         error: error,
         stackTrace: stackTrace,
@@ -312,7 +317,8 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress = CliLogger.logProgress('Test: ${test.name} - running');
+            final progress = CliLogger.logProgress('Test: ${test.name} - running',
+                loggerEnabled: _loggerEnabled);
             final testProgress = TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
           }
@@ -335,25 +341,16 @@ class TestRunner {
           final progress = progressMap[error.testID];
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
-          CliLogger.logError('',
-              error: error.error, stackTrace: StackTrace.fromString(error.stackTrace));
+          _logError('', error: error.error, stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
           if (groupName.isNotEmpty) {
-            CliLogger.logInfo('Running group: ${group.group.name}');
+            _logInfo('Running group: ${group.group.name}');
           }
         case EventType.unknown:
       }
     }
-  }
-
-  String _getFailedTestFile({required String testFilePath, required int lineNumber}) {
-    final file = File(testFilePath);
-    if (!file.existsSync()) return '';
-    final lines = file.readAsLinesSync();
-    if (lineNumber < 1 || lineNumber > lines.length) return '';
-    return lines[lineNumber - 1];
   }
 
   Future<String?> _createResultsFile({
@@ -370,7 +367,7 @@ class TestRunner {
       await file.writeAsString('');
       return file.path;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to create file $testGroupName.json',
         error: error,
         stackTrace: stackTrace,
@@ -387,7 +384,7 @@ class TestRunner {
       File(filePath).writeAsStringSync(line, mode: FileMode.append);
       return true;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to append new line to file $filePath',
         error: error,
         stackTrace: stackTrace,
@@ -402,11 +399,19 @@ class TestRunner {
         File(file).deleteSync();
       }
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to remove test group files',
         error: error,
         stackTrace: stackTrace,
       );
     }
   }
+
+  void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
+      CliLogger.logError(message,
+          error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
+
+  void _logInfo(String message) => CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
+
+  void _logSuccess(String message) => CliLogger.logSuccess(message, loggerEnabled: _loggerEnabled);
 }

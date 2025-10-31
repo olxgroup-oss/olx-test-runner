@@ -16,11 +16,17 @@ class CliLogger {
     );
   }
 
-  static void logInfo(String message) {
+  static void logInfo(String message, {bool loggerEnabled = true}) {
+    if (!loggerEnabled) {
+      return;
+    }
     _logger.info(message);
   }
 
-  static void logDebug(String message) {
+  static void logDebug(String message, {bool loggerEnabled = true}) {
+    if (!loggerEnabled) {
+      return;
+    }
     final size = message.length;
     if (size > 200) {
       var currentIndex = 0;
@@ -40,9 +46,13 @@ class CliLogger {
 
   static void logError(
     String message, {
+    bool loggerEnabled = true,
     Object? error,
     StackTrace? stackTrace,
   }) {
+    if (!loggerEnabled) {
+      return;
+    }
     _logger.err(message);
 
     if (error != null || stackTrace != null) {
@@ -56,15 +66,47 @@ class CliLogger {
     }
   }
 
-  static void logSuccess(String message) {
+  static void logSuccess(String message, {bool loggerEnabled = true}) {
+    if (!loggerEnabled) {
+      return;
+    }
     _logger.success(message);
   }
 
-  static void logWarning(String message) {
+  static void logWarning(String message, {bool loggerEnabled = true}) {
+    if (!loggerEnabled) {
+      return;
+    }
     _logger.warn(message, tag: '');
   }
 
-  static Progress logProgress(String message) {
-    return _logger.progress(message);
+  static CliLoggerProgress logProgress(String message, {bool loggerEnabled = true}) {
+    return CliLoggerProgress(
+        logger: _logger, initialMessage: message, loggerEnabled: loggerEnabled);
+  }
+}
+
+class CliLoggerProgress {
+  CliLoggerProgress(
+      {required Logger logger, required String initialMessage, bool loggerEnabled = true})
+      : _logger = logger {
+    if (loggerEnabled) {
+      _progress = _logger.progress(initialMessage);
+    }
+  }
+
+  final Logger _logger;
+  Progress? _progress;
+
+  void update(String message) {
+    _progress?.update(message);
+  }
+
+  void complete([String? message]) {
+    _progress?.complete(message);
+  }
+
+  void fail([String? message]) {
+    _progress?.fail(message);
   }
 }
