@@ -1,9 +1,11 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:olx_test_runner/command_runner/test_group_interference_detection_command.dart';
 import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/exit.dart';
 import 'package:test/scaffolding.dart';
+import 'package:test/test.dart';
 
 import 'fake_command_runner.dart';
 
@@ -36,7 +38,10 @@ void main() {
           testPath: any(named: 'testPath'),
           shardIndex: any(named: 'shardIndex'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => TestGroupInterferenceDetectionResult(
+          interferenceFound: true,
+          firstErrorTest: 'test.dart',
+          interferenceErrorTest: 'test2.dart'));
 
       when(() => mockExitWrapper.exit(any())).thenAnswer((_) => {});
       commandRunner = FakeCommandRunner(
@@ -164,6 +169,46 @@ void main() {
       ).called(1);
 
       verifyNever(() => mockExitWrapper.exit(1));
+    });
+
+    test('should exit with code 0 when interference is found', () async {
+      await commandRunner.run([
+        'test-group-interference-detection',
+        '--test-path',
+        testFiles,
+        '--seed',
+        '$seed',
+        '--shard-count',
+        '$shardCount',
+        '--shard-index',
+        '$shardIndex',
+      ]);
+
+      verify(() => mockExitWrapper.exit(0));
+    });
+
+    test('should exit with code 1 when interference is not found', () async {
+      when(
+        () => mockTestGroupInterferenceDetection.run(
+          shardCount: any(named: 'shardCount'),
+          seed: any(named: 'seed'),
+          testPath: any(named: 'testPath'),
+          shardIndex: any(named: 'shardIndex'),
+        ),
+      ).thenAnswer((_) async => TestGroupInterferenceDetectionResult(interferenceFound: false));
+      await commandRunner.run([
+        'test-group-interference-detection',
+        '--test-path',
+        testFiles,
+        '--seed',
+        '$seed',
+        '--shard-count',
+        '$shardCount',
+        '--shard-index',
+        '$shardIndex',
+      ]);
+
+      verify(() => mockExitWrapper.exit(1));
     });
   });
 }

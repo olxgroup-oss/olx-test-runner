@@ -82,11 +82,17 @@ class TestGroupInterferenceDetectionCommand extends Command<void> {
 
     final seedNumeric = int.tryParse(seed ?? '');
 
-    await _testGroupInterferenceDetection.run(
+    final result = await _testGroupInterferenceDetection.run(
       shardCount: shardCountNumeric,
       seed: seedNumeric,
       testPath: testPath,
       shardIndex: shardIndexNumeric,
     );
+
+    if (result.interferenceFound) {
+      return _exitWrapper.exit(0);
+    } else {
+      return _exitWrapper.exit(1);
+    }
   }
 }

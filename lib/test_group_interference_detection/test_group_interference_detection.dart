@@ -1,4 +1,5 @@
 import 'package:olx_test_runner/test_group_generator/test_group_generator.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection_result.dart';
 import 'package:olx_test_runner/test_runner/test_runner.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
@@ -12,7 +13,7 @@ class TestGroupInterferenceDetection {
 
   final _filePattern = RegExp(r'(.*)_[a-zA-Z0-9]+\.main\(\)');
 
-  Future<void> run({
+  Future<TestGroupInterferenceDetectionResult> run({
     required int shardCount,
     required String testPath,
     int? shardIndex,
@@ -32,7 +33,7 @@ class TestGroupInterferenceDetection {
 
       if (result.first.errorTests.isEmpty) {
         progress.complete('No test interference detected. All tests passed.');
-        return;
+        return TestGroupInterferenceDetectionResult(interferenceFound: false);
       }
 
       final firstErrorTest = result.first.errorTests.first;
@@ -52,7 +53,7 @@ class TestGroupInterferenceDetection {
 
       if (testGroups == null || testGroups.isEmpty) {
         progress.fail('No test groups generated. Exiting interference detection.');
-        return;
+        return TestGroupInterferenceDetectionResult(interferenceFound: false);
       }
 
       /// Create a sublist of test groups up to and including the first error test
@@ -84,13 +85,23 @@ class TestGroupInterferenceDetection {
         if (results.errorTests.isEmpty) {
           final interferenceTestPath = testGroupsSublist[index - 1];
           final interferenceTest = interferenceTestPath.uri.toString().split('/').last;
-          _printInterferenceFound(progress, normalizedFirstErrorTest, interferenceTest);
-          break;
+          _printInterferenceFound(
+              progress: progress,
+              firstErrorTest: normalizedFirstErrorTest,
+              interferenceTest: interferenceTest);
+
+          return TestGroupInterferenceDetectionResult(
+              interferenceFound: true,
+              firstErrorTest: normalizedFirstErrorTest,
+              interferenceErrorTest: interferenceTest);
         } else {
           CliLogger.logInfo('');
           CliLogger.logInfo('No interference solution detected in this run.');
         }
       }
+      progress.fail();
+      CliLogger.logInfo('Failed to find interference');
+      return TestGroupInterferenceDetectionResult(interferenceFound: false);
     } catch (error, stackTrace) {
       progress?.fail();
       CliLogger.logError(
@@ -98,17 +109,21 @@ class TestGroupInterferenceDetection {
         error: error,
         stackTrace: stackTrace,
       );
+      return TestGroupInterferenceDetectionResult(interferenceFound: false);
     }
   }
 
-  void _printInterferenceFound(
-      CliLoggerProgress progress, String normalizedFirstErrorTest, String interferenceTest) {
+  void _printInterferenceFound({
+    required CliLoggerProgress progress,
+    required String firstErrorTest,
+    required String interferenceTest,
+  }) {
     progress.complete('Testing completed');
     CliLogger.logSuccess('========= INTERFERENCE DETECTED =========');
     CliLogger.logSuccess(
-        'Test file located in $normalizedFirstErrorTest has interference with $interferenceTest');
+        'Test file located in $firstErrorTest has interference with $interferenceTest');
     CliLogger.logSuccess(
-        'This means that $normalizedFirstErrorTest should be investigated for side effects.');
+        'This means that $firstErrorTest should be investigated for side effects.');
     CliLogger.logSuccess('=========================================');
   }
 }
