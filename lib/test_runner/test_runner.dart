@@ -27,6 +27,8 @@ class TestRunner {
   final TestGroupGenerator _generator;
   final bool _loggerEnabled;
 
+  /// Generates test group files and runs tests.
+  /// Returns list of [TestResult] for each test group run.
   Future<List<TestResult>> run({
     required int shardCount,
     required String testPath,
@@ -97,61 +99,8 @@ class TestRunner {
     return results;
   }
 
-  Duration _calculateTotalTestTime(List<TestResult> results) {
-    var totalTime = Duration.zero;
-    for (final result in results) {
-      totalTime += result.duration;
-    }
-    return totalTime;
-  }
-
-  void _printTestsSummary(List<TestResult> results) {
-    for (final result in results) {
-      final timeFormatted = _formatDuration(result.duration);
-      final baseMessage =
-          '${result.index + 1}/${results.length} - test count: ${result.totalTestsCount} -'
-          ' success: ${result.successTestsCount} - failure: ${result.errorTestsCount} -';
-      if (result.isSuccess) {
-        _logSuccess(
-          '$baseMessage completed successfully in $timeFormatted',
-        );
-      } else {
-        _logError(
-          '$baseMessage completed with failure in $timeFormatted',
-        );
-      }
-    }
-  }
-
-  List<String> _generateTestGroups({
-    required int shardCount,
-    required String testPath,
-    int? shardIndex,
-    int? seed,
-  }) {
-    if (shardIndex != null) {
-      final file = _generator.generateTestGroupFile(
-        shardIndex: shardIndex,
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-      if (file != null) {
-        return [file];
-      } else {
-        return [];
-      }
-    } else {
-      return _generator.generateTestGroupFiles(
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-    }
-  }
-
-  String _formatDuration(Duration duration) => duration.toString();
-
+  /// Runs tests for a single test group file.
+  /// Returns [TestResult] for the test group run.
   Future<TestResult> runTests({
     required int shardIndex,
     required int totalShardCount,
@@ -257,11 +206,72 @@ class TestRunner {
     }
   }
 
+  /// Calculates total duration from list of [TestResult]s.
+  Duration _calculateTotalTestTime(List<TestResult> results) {
+    var totalTime = Duration.zero;
+    for (final result in results) {
+      totalTime += result.duration;
+    }
+    return totalTime;
+  }
+
+  /// Prints summary of test results.
+  void _printTestsSummary(List<TestResult> results) {
+    for (final result in results) {
+      final timeFormatted = _formatDuration(result.duration);
+      final baseMessage =
+          '${result.index + 1}/${results.length} - test count: ${result.totalTestsCount} -'
+          ' success: ${result.successTestsCount} - failure: ${result.errorTestsCount} -';
+      if (result.isSuccess) {
+        _logSuccess(
+          '$baseMessage completed successfully in $timeFormatted',
+        );
+      } else {
+        _logError(
+          '$baseMessage completed with failure in $timeFormatted',
+        );
+      }
+    }
+  }
+
+  /// Generates test group files based on provided parameters.
+  List<String> _generateTestGroups({
+    required int shardCount,
+    required String testPath,
+    int? shardIndex,
+    int? seed,
+  }) {
+    if (shardIndex != null) {
+      final file = _generator.generateTestGroupFile(
+        shardIndex: shardIndex,
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
+      );
+      if (file != null) {
+        return [file];
+      } else {
+        return [];
+      }
+    } else {
+      return _generator.generateTestGroupFiles(
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
+      );
+    }
+  }
+
+  /// Formats [Duration] to a readable string.
+  String _formatDuration(Duration duration) => duration.toString();
+
+  /// Determines if a test should be skipped based on its name.
   bool _shouldSkipTest(Test test) {
     final testName = test.name;
     return _skipNames.any(testName.contains);
   }
 
+  /// Tries to parse a line as JSON and returns a Map if successful.
   Map<String, dynamic>? _tryParseLine(String line) {
     try {
       if (line.isEmpty || line.contains('test.startedProcess')) {
@@ -273,6 +283,7 @@ class TestRunner {
     }
   }
 
+  /// Parses a line into a list of [Event]s.
   List<Event> _getEventFromLine(String line) {
     try {
       return line
@@ -308,6 +319,7 @@ class TestRunner {
     return [];
   }
 
+  /// Handles a single line of test output.
   void _handleLine({
     required String line,
     required Map<int, TestProgress> progressMap,
@@ -364,6 +376,7 @@ class TestRunner {
     }
   }
 
+  /// Creates a results file for storing test output.
   Future<String?> _createResultsFile({
     required String path,
     required String testGroupName,
@@ -387,6 +400,7 @@ class TestRunner {
     }
   }
 
+  /// Appends a new line to the results file.
   bool _appendNewLineToResultsFile({
     required String filePath,
     required String line,
@@ -418,13 +432,16 @@ class TestRunner {
     }
   }
 
+  /// Logs an error message.
   void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
       CliLogger.logError(message,
           error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
 
+  /// Logs an info message.
   void _logInfo(String message) =>
       CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 
+  /// Logs a success message.
   void _logSuccess(String message) =>
       CliLogger.logSuccess(message, loggerEnabled: _loggerEnabled);
 }
