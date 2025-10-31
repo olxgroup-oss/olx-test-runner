@@ -31,6 +31,11 @@ class TestGroupInterferenceDetection {
         keepGeneratedTestGroups: true,
       );
 
+      if (result.isEmpty) {
+        progress.complete('No test interference detected. All tests passed.');
+        return TestGroupInterferenceDetectionResult(interferenceFound: false);
+      }
+
       if (result.first.errorTests.isEmpty) {
         progress.complete('No test interference detected. All tests passed.');
         return TestGroupInterferenceDetectionResult(interferenceFound: false);
@@ -70,6 +75,7 @@ class TestGroupInterferenceDetection {
         progress.update('Testing interference ${index + 1}/${testGroupsSublist.length}.');
 
         final newTestGroupsSublist = testGroupsSublist.sublist(index);
+
         final file = _generator.createTestGroupFile(
             shardIndex: shardIndex ?? 0,
             shardCount: shardCount,
@@ -123,7 +129,7 @@ class TestGroupInterferenceDetection {
     CliLogger.logSuccess(
         'Test file located in $firstErrorTest has interference with $interferenceTest');
     CliLogger.logSuccess(
-        'This means that $firstErrorTest should be investigated for side effects.');
+        'This means that $interferenceTest should be investigated for side effects.');
     CliLogger.logSuccess('=========================================');
   }
 }
