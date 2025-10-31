@@ -18,8 +18,9 @@ class TestGroupInterferenceDetection {
     int? shardIndex,
     int? seed,
   }) async {
+    CliLoggerProgress? progress;
     try {
-      final progress = CliLogger.logProgress('Running test group to gather data...');
+      progress = CliLogger.logProgress('Running test group to gather data...');
 
       final result = await _testRunner.run(
         shardCount: shardCount,
@@ -38,7 +39,6 @@ class TestGroupInterferenceDetection {
       CliLogger.logInfo('');
       CliLogger.logInfo('Test interference detected on test: $firstErrorTest');
 
-
       final normalizedFirstErrorTest = firstErrorTest.replaceAllMapped(_filePattern, (match) {
         return '${match.group(1)}.dart';
       });
@@ -50,22 +50,19 @@ class TestGroupInterferenceDetection {
       final testGroups = _generator.generateTestGroup(
           shardIndex: shardIndex ?? 0, shardCount: shardCount, seed: seed, testPath: testPath);
 
-
       if (testGroups == null || testGroups.isEmpty) {
         progress.fail('No test groups generated. Exiting interference detection.');
         return;
       }
 
-
       /// Create a sublist of test groups up to and including the first error test
-      final sublistEndIndex =
-      testGroups.indexWhere((testGroupItem) =>
-          testGroupItem.uri.toString().contains(normalizedFirstErrorTest));
+      final sublistEndIndex = testGroups.indexWhere(
+          (testGroupItem) => testGroupItem.uri.toString().contains(normalizedFirstErrorTest));
 
       /// If the first error test is not found in the test groups, use the full list
       /// for interference detection
       final testGroupsSublist =
-      sublistEndIndex != -1 ? testGroups.sublist(0, sublistEndIndex + 1) : testGroups;
+          sublistEndIndex != -1 ? testGroups.sublist(0, sublistEndIndex + 1) : testGroups;
 
       /// Now, iteratively run tests removing one test at a time from the start
       for (var index = 0; index < testGroupsSublist.length; index++) {
@@ -86,10 +83,7 @@ class TestGroupInterferenceDetection {
 
         if (results.errorTests.isEmpty) {
           final interferenceTestPath = testGroupsSublist[index - 1];
-          final interferenceTest = interferenceTestPath.uri
-              .toString()
-              .split('/')
-              .last;
+          final interferenceTest = interferenceTestPath.uri.toString().split('/').last;
           _printInterferenceFound(progress, normalizedFirstErrorTest, interferenceTest);
           break;
         } else {
@@ -98,6 +92,7 @@ class TestGroupInterferenceDetection {
         }
       }
     } catch (error, stackTrace) {
+      progress?.fail();
       CliLogger.logError(
         'Failed to run test group interference detection',
         error: error,
@@ -106,11 +101,9 @@ class TestGroupInterferenceDetection {
     }
   }
 
-  void _printInterferenceFound(CliLoggerProgress progress, String normalizedFirstErrorTest,
-      String interferenceTest) {
-    progress.complete();
-    CliLogger.logInfo('');
-    CliLogger.logInfo('Testing completed');
+  void _printInterferenceFound(
+      CliLoggerProgress progress, String normalizedFirstErrorTest, String interferenceTest) {
+    progress.complete('Testing completed');
     CliLogger.logSuccess('========= INTERFERENCE DETECTED =========');
     CliLogger.logSuccess(
         'Test file located in $normalizedFirstErrorTest has interference with $interferenceTest');
@@ -118,3 +111,4 @@ class TestGroupInterferenceDetection {
         'This means that $normalizedFirstErrorTest should be investigated for side effects.');
     CliLogger.logSuccess('=========================================');
   }
+}
