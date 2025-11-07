@@ -118,6 +118,27 @@ issues or confirming that the test files are valid.
 More about this command can be found in
 the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/validate/).
 
+
+### Interference detection :white_check_mark:
+
+The Interference Detection Command is a crucial tool for maintaining the reliability and consistency
+of your test suites. It identifies tests that may interfere with each other, leading to flaky or
+unreliable test results. By pinpointing these problematic tests, developers can take corrective
+actions to ensure that their test suites remain robust and dependable.
+
+#### Command Overview
+
+You can run the interference detection command using the following syntax:
+
+```
+dart pub global run olx_test_runner test-group-interference-detection <options>
+```
+
+Upon execution, the command will analyze the specified test files and report any detected
+interference issues, providing insights into which tests may be causing problems.
+More about this command can be found in
+the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/interference/).
+
 ## Example usage
 
 Generate test groups:
@@ -139,6 +160,14 @@ Validate test groups:
 ```bash
 dart pub global activate olx_test_runner
 dart pub global run olx_test_runner validate --test-path ./test 
+
+```
+
+Test interference detection:
+
+```bash
+dart pub global activate olx_test_runner
+dart pub global run olx_test_runner test-group-interference-detection --test-path ./test_files/interference/interference 
 
 ```
 
