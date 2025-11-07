@@ -6,8 +6,7 @@ import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestGroupInterferenceDetectionCommand extends Command<void> {
   TestGroupInterferenceDetectionCommand(
-      {TestGroupInterferenceDetection? testGroupInterferenceDetection,
-      ExitWrapper? exitWrapper})
+      {TestGroupInterferenceDetection? testGroupInterferenceDetection, ExitWrapper? exitWrapper})
       : _testGroupInterferenceDetection =
             testGroupInterferenceDetection ?? TestGroupInterferenceDetection(),
         _exitWrapper = exitWrapper ?? ExitWrapper() {
@@ -50,8 +49,7 @@ class TestGroupInterferenceDetectionCommand extends Command<void> {
       return _exitWrapper.exit(1);
     }
 
-    if (shardCount != null &&
-        !InputUtils.isNumericGreaterThanZero(shardCount)) {
+    if (shardCount != null && !InputUtils.isNumericGreaterThanZero(shardCount)) {
       CliLogger.logError(
         'Invalid shard count. It should be a number greater than 0. Please provide it via --shard-count option.',
       );
@@ -92,7 +90,7 @@ class TestGroupInterferenceDetectionCommand extends Command<void> {
     );
 
     if (result.interferenceFound) {
-      return _exitWrapper.exit(0);
+      return _exitWrapper.exit(result.interferenceFound ? 0 : 1);
     } else {
       return _exitWrapper.exit(1);
     }
