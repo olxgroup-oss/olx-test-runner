@@ -119,7 +119,7 @@ More about this command can be found in
 the [documentation](https://olxgroup-oss.github.io/olx-test-runner/guides/validate/).
 
 
-### Interference detection :white_check_mark:
+### Interference detection :mag:
 
 The Interference Detection Command is a crucial tool for maintaining the reliability and consistency
 of your test suites. It identifies tests that may interfere with each other, leading to flaky or
