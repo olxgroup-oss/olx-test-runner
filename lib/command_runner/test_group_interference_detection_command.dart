@@ -1,14 +1,15 @@
 import 'package:args/command_runner.dart';
-import 'package:olx_test_runner/test_group_generator/test_group_generator.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/exit.dart';
 import 'package:olx_test_runner/utils/input_utils.dart';
 
-class TestGroupGeneratorCommand extends Command<void> {
-  TestGroupGeneratorCommand({
-    TestGroupGenerator? testGroupGenerator,
-    ExitWrapper? exitWrapper,
-  })  : _testGroupGenerator = testGroupGenerator ?? TestGroupGenerator(),
+class TestGroupInterferenceDetectionCommand extends Command<void> {
+  TestGroupInterferenceDetectionCommand(
+      {TestGroupInterferenceDetection? testGroupInterferenceDetection,
+      ExitWrapper? exitWrapper})
+      : _testGroupInterferenceDetection =
+            testGroupInterferenceDetection ?? TestGroupInterferenceDetection(),
         _exitWrapper = exitWrapper ?? ExitWrapper() {
     argParser
       ..addOption(
@@ -26,14 +27,14 @@ class TestGroupGeneratorCommand extends Command<void> {
       );
   }
 
-  final TestGroupGenerator _testGroupGenerator;
+  final TestGroupInterferenceDetection _testGroupInterferenceDetection;
   final ExitWrapper _exitWrapper;
 
   @override
-  String get description => 'Generates test group file.';
+  String get description => 'Detects interference between tests.';
 
   @override
-  String get name => 'generate';
+  String get name => 'test-group-interference-detection';
 
   @override
   Future<void> run() async {
@@ -76,37 +77,24 @@ class TestGroupGeneratorCommand extends Command<void> {
 
     if (testPath == null || testPath.isEmpty == true) {
       CliLogger.logError(
-        'Invalid path. Please provide it via --test-path option.',
+        'Invalid test path. Please provide it via --test-path option.',
       );
       return _exitWrapper.exit(1);
     }
 
     final seedNumeric = int.tryParse(seed ?? '');
-    final results = <String>[];
 
-    if (shardIndexNumeric != null) {
-      final file = _testGroupGenerator.generateTestGroupFile(
-        shardIndex: shardIndexNumeric,
-        shardCount: shardCountNumeric,
-        seed: seedNumeric,
-        testPath: testPath,
-      );
-      if (file != null) {
-        results.add(file);
-      }
+    final result = await _testGroupInterferenceDetection.run(
+      shardCount: shardCountNumeric,
+      seed: seedNumeric,
+      testPath: testPath,
+      shardIndex: shardIndexNumeric,
+    );
+
+    if (result.interferenceFound) {
+      return _exitWrapper.exit(result.interferenceFound ? 0 : 1);
     } else {
-      results.addAll(
-        _testGroupGenerator.generateTestGroupFiles(
-          shardCount: shardCountNumeric,
-          seed: seedNumeric,
-          testPath: testPath,
-        ),
-      );
-    }
-
-    if (results.isEmpty) {
-      CliLogger.logError('No test groups were generated');
-      _exitWrapper.exit(1);
+      return _exitWrapper.exit(1);
     }
   }
 }

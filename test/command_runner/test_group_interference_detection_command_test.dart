@@ -1,13 +1,16 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:olx_test_runner/command_runner/test_group_generator_command.dart';
-import 'package:olx_test_runner/test_group_generator/test_group_generator.dart';
+import 'package:olx_test_runner/command_runner/test_group_interference_detection_command.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection.dart';
+import 'package:olx_test_runner/test_group_interference_detection/test_group_interference_detection_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/exit.dart';
 import 'package:test/scaffolding.dart';
+import 'package:test/test.dart';
 
 import 'fake_command_runner.dart';
 
-class TestGroupGeneratorMock extends Mock implements TestGroupGenerator {}
+class TestGroupInterferenceDetectionMock extends Mock
+    implements TestGroupInterferenceDetection {}
 
 class ExitWrapperMock extends Mock implements ExitWrapper {}
 
@@ -17,8 +20,8 @@ void main() {
   const shardCount = 3;
   const shardIndex = 0;
 
-  group('$TestGroupGeneratorCommand', () {
-    late TestGroupGeneratorMock mockTestGroupGenerator;
+  group('$TestGroupInterferenceDetectionCommand', () {
+    late TestGroupInterferenceDetectionMock mockTestGroupInterferenceDetection;
     late ExitWrapperMock mockExitWrapper;
     late FakeCommandRunner commandRunner;
 
@@ -27,27 +30,24 @@ void main() {
     });
 
     setUp(() {
-      mockTestGroupGenerator = TestGroupGeneratorMock();
+      mockTestGroupInterferenceDetection = TestGroupInterferenceDetectionMock();
       mockExitWrapper = ExitWrapperMock();
       when(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: any(named: 'shardCount'),
-          seed: any(named: 'seed'),
-          testPath: any(named: 'testPath'),
-        ),
-      ).thenAnswer((_) => ['file_path']);
-      when(
-        () => mockTestGroupGenerator.generateTestGroupFile(
+        () => mockTestGroupInterferenceDetection.run(
           shardCount: any(named: 'shardCount'),
           seed: any(named: 'seed'),
           testPath: any(named: 'testPath'),
           shardIndex: any(named: 'shardIndex'),
         ),
-      ).thenAnswer((_) => 'file_path');
+      ).thenAnswer((_) async => TestGroupInterferenceDetectionResult(
+          interferenceFound: true,
+          firstErrorTest: 'test.dart',
+          interferenceErrorTest: 'test2.dart'));
+
       when(() => mockExitWrapper.exit(any())).thenAnswer((_) => {});
       commandRunner = FakeCommandRunner(
-        TestGroupGeneratorCommand(
-          testGroupGenerator: mockTestGroupGenerator,
+        TestGroupInterferenceDetectionCommand(
+          testGroupInterferenceDetection: mockTestGroupInterferenceDetection,
           exitWrapper: mockExitWrapper,
         ),
       );
@@ -55,7 +55,7 @@ void main() {
 
     test('should exit with error if shard index is invalid', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--shard-index',
         'invalid',
       ]);
@@ -65,7 +65,7 @@ void main() {
 
     test('should exit with error if shard index is not positive', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--shard-index',
         '-1',
         '--test-path',
@@ -77,7 +77,7 @@ void main() {
 
     test('should exit with error if shard count is invalid', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--shard-count',
         'invalid',
         '--test-path',
@@ -89,7 +89,7 @@ void main() {
 
     test('should exit with error if shard count is not positive', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--shard-count',
         '-1',
         '--test-path',
@@ -101,7 +101,7 @@ void main() {
 
     test('should exit with error if shard count is zero', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--shard-count',
         '0',
         '--test-path',
@@ -113,7 +113,7 @@ void main() {
 
     test('should exit with error if seed is invalid', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--seed',
         'invalid',
         '--test-path',
@@ -125,7 +125,7 @@ void main() {
 
     test('should exit with error if seed is not positive', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--seed',
         '-1',
         '--test-path',
@@ -137,7 +137,7 @@ void main() {
 
     test('should exit with error if test path is invalid', () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--test-path',
         '',
       ]);
@@ -145,98 +145,11 @@ void main() {
       verify(() => mockExitWrapper.exit(1));
     });
 
-    test('should exit with error if generate fails and there are no results',
-        () async {
-      when(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: any(named: 'shardCount'),
-          seed: any(named: 'seed'),
-          testPath: any(named: 'testPath'),
-        ),
-      ).thenAnswer((_) => []);
-
-      await commandRunner.run([
-        'generate',
-        '--test-path',
-        testFiles,
-      ]);
-
-      verify(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: any(named: 'shardCount'),
-          seed: any(named: 'seed'),
-          testPath: any(named: 'testPath'),
-        ),
-      ).called(1);
-
-      verify(() => mockExitWrapper.exit(1));
-    });
-
-    test('should generate test groups if only test path is provided', () async {
-      await commandRunner.run([
-        'generate',
-        '--test-path',
-        testFiles,
-      ]);
-
-      verify(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: any(named: 'shardCount'),
-          seed: any(named: 'seed'),
-          testPath: any(named: 'testPath'),
-        ),
-      ).called(1);
-
-      verifyNever(() => mockExitWrapper.exit(1));
-    });
-
-    test('should generate test groups if test path and seed are provided',
-        () async {
-      await commandRunner
-          .run(['generate', '--test-path', testFiles, '--seed', '$seed']);
-
-      verify(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: any(named: 'shardCount'),
-          seed: seed,
-          testPath: testFiles,
-        ),
-      ).called(1);
-
-      verifyNever(() => mockExitWrapper.exit(1));
-    });
-
     test(
-        'should generate test groups if test path, seed and shard count are provided',
-        () async {
-      await commandRunner.run(
-        [
-          'generate',
-          '--test-path',
-          testFiles,
-          '--seed',
-          '$seed',
-          '--shard-count',
-          '$shardCount',
-        ],
-      );
-
-      verify(
-        () => mockTestGroupGenerator.generateTestGroupFiles(
-          shardCount: shardCount,
-          seed: seed,
-          testPath: testFiles,
-        ),
-      ).called(1);
-
-      verifyNever(() => mockExitWrapper.exit(1));
-    });
-
-    test(
-        'should generate test groups if test path, seed, shard count and shard index are provided',
+        'should test interference for groups if test path, seed, shard count and shard index are provided',
         () async {
       await commandRunner.run([
-        'generate',
+        'test-group-interference-detection',
         '--test-path',
         testFiles,
         '--seed',
@@ -248,15 +161,56 @@ void main() {
       ]);
 
       verify(
-        () => mockTestGroupGenerator.generateTestGroupFile(
-          shardCount: shardCount,
-          seed: seed,
-          testPath: testFiles,
-          shardIndex: shardIndex,
+        () => mockTestGroupInterferenceDetection.run(
+          shardCount: any(named: 'shardCount'),
+          seed: any(named: 'seed'),
+          testPath: any(named: 'testPath'),
+          shardIndex: any(named: 'shardIndex'),
         ),
       ).called(1);
 
       verifyNever(() => mockExitWrapper.exit(1));
+    });
+
+    test('should exit with code 0 when interference is found', () async {
+      await commandRunner.run([
+        'test-group-interference-detection',
+        '--test-path',
+        testFiles,
+        '--seed',
+        '$seed',
+        '--shard-count',
+        '$shardCount',
+        '--shard-index',
+        '$shardIndex',
+      ]);
+
+      verify(() => mockExitWrapper.exit(0));
+    });
+
+    test('should exit with code 1 when interference is not found', () async {
+      when(
+        () => mockTestGroupInterferenceDetection.run(
+          shardCount: any(named: 'shardCount'),
+          seed: any(named: 'seed'),
+          testPath: any(named: 'testPath'),
+          shardIndex: any(named: 'shardIndex'),
+        ),
+      ).thenAnswer((_) async =>
+          TestGroupInterferenceDetectionResult(interferenceFound: false));
+      await commandRunner.run([
+        'test-group-interference-detection',
+        '--test-path',
+        testFiles,
+        '--seed',
+        '$seed',
+        '--shard-count',
+        '$shardCount',
+        '--shard-index',
+        '$shardIndex',
+      ]);
+
+      verify(() => mockExitWrapper.exit(1));
     });
   });
 }

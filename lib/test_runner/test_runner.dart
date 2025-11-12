@@ -12,8 +12,10 @@ import 'package:olx_test_runner/test_runner/test_result.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 
 class TestRunner {
-  TestRunner({TestGroupGenerator? generator})
-      : _generator = generator ?? TestGroupGenerator();
+  TestRunner({TestGroupGenerator? generator, bool loggerEnabled = true})
+      : _generator =
+            generator ?? TestGroupGenerator(loggerEnabled: loggerEnabled),
+        _loggerEnabled = loggerEnabled;
 
   static const _skipNames = [
     '(setUp)',
@@ -23,7 +25,10 @@ class TestRunner {
   ];
 
   final TestGroupGenerator _generator;
+  final bool _loggerEnabled;
 
+  /// Generates test group files and runs tests.
+  /// Returns list of [TestResult] for each test group run.
   Future<List<TestResult>> run({
     required int shardCount,
     required String testPath,
@@ -34,7 +39,9 @@ class TestRunner {
     String? coveragePath,
     bool? keepGeneratedTestGroups,
   }) async {
-    final progress = CliLogger.logProgress('Generating files');
+    final progress = CliLogger.logProgress('Generating files',
+        loggerEnabled: _loggerEnabled);
+
     final results = <TestResult>[];
     final files = <String>[];
     try {
@@ -56,7 +63,7 @@ class TestRunner {
 
       for (var fileIndex = 0; fileIndex < files.length; fileIndex++) {
         results.add(
-          await _runTests(
+          await runTests(
             shardIndex: fileIndex,
             totalShardCount: files.length,
             filePath: files[fileIndex],
@@ -70,15 +77,16 @@ class TestRunner {
 
       final totalTime = _calculateTotalTestTime(results);
 
-      CliLogger.logSuccess(' ');
-      CliLogger.logSuccess(
+      _logSuccess(' ');
+      _logSuccess(
         'Running tests completed in ${_formatDuration(totalTime)}',
       );
 
       _printTestsSummary(results);
     } catch (error, stackTrace) {
       progress.fail('Running tests failed');
-      CliLogger.logError(
+
+      _logError(
         'Running tests failed',
         error: error,
         stackTrace: stackTrace,
@@ -91,62 +99,9 @@ class TestRunner {
     return results;
   }
 
-  Duration _calculateTotalTestTime(List<TestResult> results) {
-    var totalTime = Duration.zero;
-    for (final result in results) {
-      totalTime += result.duration;
-    }
-    return totalTime;
-  }
-
-  void _printTestsSummary(List<TestResult> results) {
-    for (final result in results) {
-      final timeFormatted = _formatDuration(result.duration);
-      final baseMessage =
-          '${result.index + 1}/${results.length} - test count: ${result.totalTestsCount} -'
-          ' success: ${result.successTestsCount} - failure: ${result.errorTestsCount} -';
-      if (result.isSuccess) {
-        CliLogger.logSuccess(
-          '$baseMessage completed successfully in $timeFormatted',
-        );
-      } else {
-        CliLogger.logError(
-          '$baseMessage completed with failure in $timeFormatted',
-        );
-      }
-    }
-  }
-
-  List<String> _generateTestGroups({
-    required int shardCount,
-    required String testPath,
-    int? shardIndex,
-    int? seed,
-  }) {
-    if (shardIndex != null) {
-      final file = _generator.generateTestGroup(
-        shardIndex: shardIndex,
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-      if (file != null) {
-        return [file];
-      } else {
-        return [];
-      }
-    } else {
-      return _generator.generateTestGroups(
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-    }
-  }
-
-  String _formatDuration(Duration duration) => duration.toString();
-
-  Future<TestResult> _runTests({
+  /// Runs tests for a single test group file.
+  /// Returns [TestResult] for the test group run.
+  Future<TestResult> runTests({
     required int shardIndex,
     required int totalShardCount,
     required String filePath,
@@ -167,7 +122,7 @@ class TestRunner {
       final stopwatch = Stopwatch()..start();
       final progressMap = <int, TestProgress>{};
 
-      CliLogger.logInfo(
+      _logInfo(
         'Running test group: ${shardIndex + 1}/$totalShardCount',
       );
 
@@ -197,52 +152,126 @@ class TestRunner {
       var successCount = 0;
       var failureCount = 0;
       var failed = await process.exitCode != 0;
+      final errorTests = <String>[];
+
+      final testFile = File(filePath);
+      final testFileLines =
+          testFile.existsSync() ? testFile.readAsLinesSync() : <String>[];
+
       for (final progress in progressMap.values) {
         if (progress.completed) {
           if (progress.failed) {
             failureCount += 1;
             failed = true;
+            final rootLine = progress.test.rootLine;
+            if (rootLine != null &&
+                rootLine > 0 &&
+                rootLine <= testFileLines.length) {
+              errorTests
+                  .add(testFileLines[rootLine - 1].trim().replaceAll(';', ''));
+            }
           } else {
             successCount += 1;
           }
         }
       }
 
-      CliLogger.logInfo(
+      _logInfo(
         'Completed test group ${shardIndex + 1}/$totalShardCount',
       );
       return TestResult(
-        index: shardIndex,
-        filePath: filePath,
-        isSuccess: !failed,
-        duration: duration,
-        totalTestsCount: progressMap.length,
-        successTestsCount: successCount,
-        errorTestsCount: failureCount,
-      );
+          index: shardIndex,
+          filePath: filePath,
+          isSuccess: !failed,
+          duration: duration,
+          totalTestsCount: progressMap.length,
+          successTestsCount: successCount,
+          errorTestsCount: failureCount,
+          errorTests: errorTests);
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Running test failed',
         error: error,
         stackTrace: stackTrace,
       );
       return TestResult(
-        index: shardIndex,
-        filePath: filePath,
-        isSuccess: false,
-        duration: Duration.zero,
-        totalTestsCount: 0,
-        successTestsCount: 0,
-        errorTestsCount: 1,
+          index: shardIndex,
+          filePath: filePath,
+          isSuccess: false,
+          duration: Duration.zero,
+          totalTestsCount: 0,
+          successTestsCount: 0,
+          errorTestsCount: 1,
+          errorTests: [filePath]);
+    }
+  }
+
+  /// Calculates total duration from list of [TestResult]s.
+  Duration _calculateTotalTestTime(List<TestResult> results) {
+    var totalTime = Duration.zero;
+    for (final result in results) {
+      totalTime += result.duration;
+    }
+    return totalTime;
+  }
+
+  /// Prints summary of test results.
+  void _printTestsSummary(List<TestResult> results) {
+    for (final result in results) {
+      final timeFormatted = _formatDuration(result.duration);
+      final baseMessage =
+          '${result.index + 1}/${results.length} - test count: ${result.totalTestsCount} -'
+          ' success: ${result.successTestsCount} - failure: ${result.errorTestsCount} -';
+      if (result.isSuccess) {
+        _logSuccess(
+          '$baseMessage completed successfully in $timeFormatted',
+        );
+      } else {
+        _logError(
+          '$baseMessage completed with failure in $timeFormatted',
+        );
+      }
+    }
+  }
+
+  /// Generates test group files based on provided parameters.
+  List<String> _generateTestGroups({
+    required int shardCount,
+    required String testPath,
+    int? shardIndex,
+    int? seed,
+  }) {
+    if (shardIndex != null) {
+      final file = _generator.generateTestGroupFile(
+        shardIndex: shardIndex,
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
+      );
+      if (file != null) {
+        return [file];
+      } else {
+        return [];
+      }
+    } else {
+      return _generator.generateTestGroupFiles(
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
       );
     }
   }
 
+  /// Formats [Duration] to a readable string.
+  String _formatDuration(Duration duration) => duration.toString();
+
+  /// Determines if a test should be skipped based on its name.
   bool _shouldSkipTest(Test test) {
     final testName = test.name;
     return _skipNames.any(testName.contains);
   }
 
+  /// Tries to parse a line as JSON and returns a Map if successful.
   Map<String, dynamic>? _tryParseLine(String line) {
     try {
       if (line.isEmpty || line.contains('test.startedProcess')) {
@@ -254,6 +283,7 @@ class TestRunner {
     }
   }
 
+  /// Parses a line into a list of [Event]s.
   List<Event> _getEventFromLine(String line) {
     try {
       return line
@@ -280,7 +310,7 @@ class TestRunner {
           .nonNulls
           .toList();
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to parse line: $line',
         error: error,
         stackTrace: stackTrace,
@@ -289,6 +319,7 @@ class TestRunner {
     return [];
   }
 
+  /// Handles a single line of test output.
   void _handleLine({
     required String line,
     required Map<int, TestProgress> progressMap,
@@ -305,8 +336,9 @@ class TestRunner {
           final startTest = event as TestStartEvent;
           final test = startTest.test;
           if (!_shouldSkipTest(test)) {
-            final progress =
-                CliLogger.logProgress('Test: ${test.name} - running');
+            final progress = CliLogger.logProgress(
+                'Test: ${test.name} - running',
+                loggerEnabled: _loggerEnabled);
             final testProgress =
                 TestProgress(test: startTest.test, progress: progress);
             progressMap[test.id] = testProgress;
@@ -330,20 +362,21 @@ class TestRunner {
           final progress = progressMap[error.testID];
           progress?.progress.fail('Test: ${progress.test.name} - fail');
           progress?.failed = true;
-          CliLogger.logError('',
+          _logError('',
               error: error.error,
               stackTrace: StackTrace.fromString(error.stackTrace));
         case EventType.group:
           final group = event as GroupEvent;
           final groupName = group.group.name;
           if (groupName.isNotEmpty) {
-            CliLogger.logInfo('Running group: ${group.group.name}');
+            _logInfo('Running group: ${group.group.name}');
           }
         case EventType.unknown:
       }
     }
   }
 
+  /// Creates a results file for storing test output.
   Future<String?> _createResultsFile({
     required String path,
     required String testGroupName,
@@ -358,7 +391,7 @@ class TestRunner {
       await file.writeAsString('');
       return file.path;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to create file $testGroupName.json',
         error: error,
         stackTrace: stackTrace,
@@ -367,6 +400,7 @@ class TestRunner {
     }
   }
 
+  /// Appends a new line to the results file.
   bool _appendNewLineToResultsFile({
     required String filePath,
     required String line,
@@ -375,7 +409,7 @@ class TestRunner {
       File(filePath).writeAsStringSync(line, mode: FileMode.append);
       return true;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to append new line to file $filePath',
         error: error,
         stackTrace: stackTrace,
@@ -390,11 +424,24 @@ class TestRunner {
         File(file).deleteSync();
       }
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to remove test group files',
         error: error,
         stackTrace: stackTrace,
       );
     }
   }
+
+  /// Logs an error message.
+  void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
+      CliLogger.logError(message,
+          error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
+
+  /// Logs an info message.
+  void _logInfo(String message) =>
+      CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
+
+  /// Logs a success message.
+  void _logSuccess(String message) =>
+      CliLogger.logSuccess(message, loggerEnabled: _loggerEnabled);
 }

@@ -4,7 +4,6 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:olx_test_runner/test_validator/validation_result.dart';
 import 'package:olx_test_runner/test_validator/validation_summary.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
@@ -82,7 +81,7 @@ class TestValidator {
 
   Future<List<ValidationResult>> _validateFiles({
     required List<String> files,
-    required Progress loggerProgress,
+    required CliLoggerProgress loggerProgress,
   }) async {
     if (files.isEmpty) {
       CliLogger.logError(

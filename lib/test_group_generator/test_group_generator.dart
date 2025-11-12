@@ -1,29 +1,36 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:mason_logger/mason_logger.dart';
 import 'package:olx_test_runner/utils/cli_logger.dart';
 import 'package:olx_test_runner/utils/input_utils.dart';
 
 class TestGroupGenerator {
-  String? generateTestGroup({
+  TestGroupGenerator({bool loggerEnabled = true})
+      : _loggerEnabled = loggerEnabled;
+
+  final bool _loggerEnabled;
+
+  /// Detects test files in the provided [testPath] and generates test group file for specific shard.
+  /// Returns created file path.
+  String? generateTestGroupFile({
     required int shardIndex,
     required int shardCount,
     required String testPath,
     int? seed,
   }) {
-    Progress? progress;
+    CliLoggerProgress? progress;
     try {
-      CliLogger.logInfo(
+      _logInfo(
         'Generating test groups for `$testPath`. Test group index: $shardIndex, total groups:'
         ' $shardCount ${seed != null ? 'Seed: $seed.' : ''}',
       );
 
       if (!InputUtils.validateDirExists(testPath)) {
-        CliLogger.logError('The path: `$testPath` does not exist.');
+        _logError('The path: `$testPath` does not exist.');
         return null;
       }
-      progress = CliLogger.logProgress('Searching for test files...');
+      progress = CliLogger.logProgress('Searching for test files...',
+          loggerEnabled: _loggerEnabled);
 
       final testFiles = _getTestFiles(testPath);
 
@@ -54,17 +61,17 @@ class TestGroupGenerator {
 
       progress.update('Building test group file');
 
-      final file = _createTestGroupFile(
+      final file = createTestGroupFile(
         shardIndex: shardIndex,
         shardCount: shardCount,
         testPath: testPath,
-        groups: groups,
+        groups: groups[shardIndex],
       );
 
       progress.complete('Generated test group file: ${file.path}');
       return file.path;
     } catch (error, stackTrace) {
-      CliLogger.logError(
+      _logError(
         'Failed to generate test groups',
         error: error,
         stackTrace: stackTrace,
@@ -74,6 +81,146 @@ class TestGroupGenerator {
     }
   }
 
+  /// Generates test group files for all shards.
+  /// Returns list of created file paths.
+  List<String> generateTestGroupFiles({
+    required int shardCount,
+    required String testPath,
+    int? seed,
+  }) {
+    final filePaths = <String>[];
+    if (!InputUtils.validateDirExists(testPath)) {
+      _logError('The path: `$testPath` does not exist.');
+      return filePaths;
+    }
+
+    for (var shardIndex = 0; shardIndex < shardCount; shardIndex++) {
+      final filePath = generateTestGroupFile(
+        shardIndex: shardIndex,
+        shardCount: shardCount,
+        seed: seed,
+        testPath: testPath,
+      );
+      if (filePath != null) {
+        filePaths.add(filePath);
+      }
+    }
+    return filePaths;
+  }
+
+  /// Detects test files in the provided [testPath] and creates test groups for specific shard.
+  /// Returns list of test files in the group.
+  List<FileSystemEntity>? getTestGroup({
+    required int shardIndex,
+    required int shardCount,
+    required String testPath,
+    int? seed,
+  }) {
+    CliLoggerProgress? progress;
+    try {
+      _logInfo(
+        'Generating test groups for `$testPath`. Test group index: $shardIndex, total groups:'
+        ' $shardCount ${seed != null ? 'Seed: $seed.' : ''}',
+      );
+
+      if (!InputUtils.validateDirExists(testPath)) {
+        _logError('The path: `$testPath` does not exist.');
+        return null;
+      }
+      progress = CliLogger.logProgress('Searching for test files...',
+          loggerEnabled: _loggerEnabled);
+
+      final testFiles = _getTestFiles(testPath);
+
+      if (seed != null) {
+        progress.update('Shuffling...');
+        testFiles.shuffle(Random(seed));
+      }
+
+      if (testFiles.isEmpty) {
+        progress.fail(
+          '${shardIndex + 1}/$shardCount No test files found. Make sure on provided path with '
+          '--testPath, there are files with `_test.dart`.',
+        );
+        return null;
+      }
+
+      progress.update('Creating test groups...');
+
+      final groups =
+          _createGroups(testFiles: testFiles, shardCount: shardCount);
+
+      if (groups[shardIndex].isEmpty) {
+        progress.fail(
+          '${shardIndex + 1}/$shardCount No test groups found for current shard.',
+        );
+        return null;
+      }
+
+      progress.complete('Building test group file');
+
+      return groups[shardIndex];
+    } catch (error, stackTrace) {
+      _logError(
+        'Failed to generate test groups',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      progress?.fail('Generate test group failed');
+      return null;
+    }
+  }
+
+  /// Creates test group file for specific shard.
+  /// Returns created file.
+  File createTestGroupFile({
+    required int shardIndex,
+    required int shardCount,
+    required String testPath,
+    required List<FileSystemEntity> groups,
+  }) {
+    final buffer = StringBuffer()
+      ..writeln('// OLX Test Runner generated file')
+      ..writeln('// TEST GROUP ${shardIndex + 1}/$shardCount');
+
+    for (final file in groups) {
+      final relativePath = file.path.replaceFirst('$testPath/', '');
+      final alias = _generateAlias(file.path);
+      buffer.writeln("import '$relativePath' as $alias;");
+    }
+
+    buffer
+      ..writeln()
+      ..writeln('void main() {');
+
+    for (final file in groups) {
+      final alias = _generateAlias(file.path);
+      buffer.writeln('  $alias.main();');
+    }
+    buffer.writeln('}');
+
+    return _createFile(testPath: testPath, shardIndex: shardIndex)
+      ..writeAsStringSync(buffer.toString());
+  }
+
+  /// Retrieves all test files from the provided [testPath].
+  /// Returns list of test files.
+  List<FileSystemEntity> _getTestFiles(String testPath) {
+    final testDirectory = Directory(testPath);
+
+    final testGroups = testDirectory
+        .listSync(recursive: true)
+        .where(
+          (entity) => entity is File && entity.path.endsWith('_test.dart'),
+        )
+        .toList()
+      ..sort((item1, item2) => item1.path.compareTo(item2.path));
+
+    return testGroups;
+  }
+
+  /// Creates groups of test files based on the [shardCount].
+  /// Returns list of test file groups.
   List<List<FileSystemEntity>> _createGroups({
     required List<FileSystemEntity> testFiles,
     required int shardCount,
@@ -89,75 +236,8 @@ class TestGroupGenerator {
     return groups;
   }
 
-  List<String> generateTestGroups({
-    required int shardCount,
-    required String testPath,
-    int? seed,
-  }) {
-    final filePaths = <String>[];
-    if (!InputUtils.validateDirExists(testPath)) {
-      CliLogger.logError('The path: `$testPath` does not exist.');
-      return filePaths;
-    }
-
-    for (var shardIndex = 0; shardIndex < shardCount; shardIndex++) {
-      final filePath = generateTestGroup(
-        shardIndex: shardIndex,
-        shardCount: shardCount,
-        seed: seed,
-        testPath: testPath,
-      );
-      if (filePath != null) {
-        filePaths.add(filePath);
-      }
-    }
-    return filePaths;
-  }
-
-  File _createTestGroupFile({
-    required int shardIndex,
-    required int shardCount,
-    required String testPath,
-    required List<List<FileSystemEntity>> groups,
-  }) {
-    final buffer = StringBuffer()
-      ..writeln('// OLX Test Runner generated file')
-      ..writeln('// TEST GROUP ${shardIndex + 1}/$shardCount');
-
-    for (final file in groups[shardIndex]) {
-      final relativePath = file.path.replaceFirst('$testPath/', '');
-      final alias = _generateAlias(file.path);
-      buffer.writeln("import '$relativePath' as $alias;");
-    }
-
-    buffer
-      ..writeln()
-      ..writeln('void main() {');
-
-    for (final file in groups[shardIndex]) {
-      final alias = _generateAlias(file.path);
-      buffer.writeln('  $alias.main();');
-    }
-    buffer.writeln('}');
-
-    return _createFile(testPath: testPath, shardIndex: shardIndex)
-      ..writeAsStringSync(buffer.toString());
-  }
-
-  List<FileSystemEntity> _getTestFiles(String testPath) {
-    final testDirectory = Directory(testPath);
-
-    final testGroups = testDirectory
-        .listSync(recursive: true)
-        .where(
-          (entity) => entity is File && entity.path.endsWith('_test.dart'),
-        )
-        .toList()
-      ..sort((item1, item2) => item1.path.compareTo(item2.path));
-
-    return testGroups;
-  }
-
+  /// Creates file at specified [testPath] for given [shardIndex].
+  /// Returns created file.
   File _createFile({required String testPath, required int shardIndex}) {
     final file = File('$testPath/generated_test_group_$shardIndex.dart');
     if (file.existsSync()) {
@@ -183,4 +263,13 @@ class TestGroupGenerator {
 
     return '${path}_$hashHex';
   }
+
+  /// Logs error message with optional [error] and [stackTrace].
+  void _logError(String message, {Object? error, StackTrace? stackTrace}) =>
+      CliLogger.logError(message,
+          error: error, stackTrace: stackTrace, loggerEnabled: _loggerEnabled);
+
+  /// Logs info message.
+  void _logInfo(String message) =>
+      CliLogger.logInfo(message, loggerEnabled: _loggerEnabled);
 }

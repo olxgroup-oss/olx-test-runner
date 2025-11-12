@@ -1,3 +1,9 @@
+# 0.12.0
+* FEAT: Added test-group-interference-detection command to detect interference between test groups.
+* FEAT: Improved logging for test runner and test group generator command.
+* FEAT: Updated API of test runner and test group generator command to support changes in test-group-interference-detection command.
+* FEAT: Updated documentation.
+
 # 0.11.2
 * FIX: Fixed handling of empty test groups.
 

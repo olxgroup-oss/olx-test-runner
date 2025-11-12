@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:args/command_runner.dart';
 import 'package:cli_launcher/cli_launcher.dart';
 import 'package:olx_test_runner/command_runner/test_group_generator_command.dart';
+import 'package:olx_test_runner/command_runner/test_group_interference_detection_command.dart';
 import 'package:olx_test_runner/command_runner/test_runner_command.dart';
 import 'package:olx_test_runner/command_runner/validate_test_command.dart';
 
@@ -14,6 +16,7 @@ class TestRunnerCommandRunner extends CommandRunner<void> {
     addCommand(TestGroupGeneratorCommand());
     addCommand(ValidateTestCommand());
     addCommand(TestRunnerCommand());
+    addCommand(TestGroupInterferenceDetectionCommand());
   }
 }
 

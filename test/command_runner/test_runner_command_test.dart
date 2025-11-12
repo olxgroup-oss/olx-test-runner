@@ -74,6 +74,7 @@ void main() {
             totalTestsCount: 1,
             errorTestsCount: 0,
             successTestsCount: 1,
+            errorTests: [],
           ),
         ],
       );
@@ -221,6 +222,7 @@ void main() {
             totalTestsCount: 1,
             errorTestsCount: 1,
             successTestsCount: 0,
+            errorTests: [],
           ),
         ],
       );
